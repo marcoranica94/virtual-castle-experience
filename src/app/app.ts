@@ -22,6 +22,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
 })
 export class AppComponent {
   prepareRoute(outlet: RouterOutlet): string {
-    return outlet?.activatedRoute?.snapshot?.url?.[0]?.path ?? '';
+    return outlet?.isActivated ? (outlet.activatedRoute.snapshot.url[0]?.path ?? '') : '';
   }
 }
