@@ -46,18 +46,37 @@ Ultimo aggiornamento: 2026-03-30
 | SPA routing non funziona su GitHub Pages | `withHashLocation()` in `app.config.ts` — URL con `#` |
 | Build Angular con GitHub Pages sbagliato il baseHref | `"baseHref": "/virtual-castle-experience/"` in `angular.json` production |
 | Deploy richiede build manuale | GitHub Actions in `.github/workflows/deploy.yml` — build + deploy automatico su push |
+| qrcode CommonJS warning nel build | `allowedCommonJsDependencies: ["qrcode","dijkstrajs"]` in angular.json |
+| window.plausible TypeScript error | `declare global { interface Window { plausible?: ... } }` in analytics.service.ts |
+
+## Versioni Dipendenze Aggiunte
+| Libreria | Versione | Motivo |
+|---|---|---|
+| @angular/animations | 21.2.6 | Route fade transition |
+| @angular/service-worker | 21.2.x | Cache offline app-shell + assets |
+| qrcode | 1.5.4 | Generazione QR code cartelli |
 
 ## Cosa Funziona
-- Build Angular compilato con successo (63 kB iniziali)
-- Routing lazy-loaded: Home → Sala → Esperienza AR → Tutorial → Profilo → Attestato
-- Servizi: ProgressService (badge/punti), ArService (compatibilità + load librerie), AnalyticsService
+- Build Angular compilato con successo (~250 kB iniziali con animations)
+- Routing lazy-loaded: Home → Sala → Esperienza AR → Tutorial → Profilo → Attestato → Privacy → QR → 404
+- Route animations: fade-in 180ms su ogni navigazione (`@routeFade`)
+- Servizi: ProgressService (badge/punti/newBadge signal), ArService (preload in RoomMenu), AnalyticsService (localStorage + Plausible), ShareService (Web Share API + clipboard fallback)
 - Componenti UI: Card, ProgressBar, SubtitleOverlay, Quiz, InfoPanel
 - Dati Sala Rossa con copioni storici realistici (Rocca Albani), quiz, timeline accurata
-- D-03: Mini-tutorial pre-AR (localStorage `arTutorialSeen` — mostrato solo prima volta)
-- D-13: Modale "Non funziona?" con 5 tip di troubleshooting
-- Scan hint automatico dopo 15 sec se target non trovato
-- PWA manifest (`manifest.webmanifest`) — installabile da smartphone
-- Pagina attestato stampabile (`/attestato`) — ottimizzata `@media print`
+- D-03: Mini-tutorial pre-AR (localStorage `arTutorialSeen`)
+- D-13: Modale "Non funziona?" con troubleshooting
+- G-04: Messaggio bentornato Drago (localStorage `dragoVisited`)
+- G-06: Toast badge sbloccato (ProgressService.newBadge signal + effect)
+- Scan hint automatico dopo 15 sec + viewfinder animato (angoli dorati)
+- Orientation warning (overlay quando device in landscape)
+- Loading screen AR animata (castlePulse, barra con glow, percentuale)
+- PWA manifest + Service Worker offline (ngsw-config.json)
+- Plausible Analytics (tagged-events, no cookie, GDPR compliant)
+- Pagina attestato stampabile con share button (Web Share API)
+- Pagina QR cartelli stampabili (qrcode npm)
+- Pagina Privacy GDPR, pagina 404 personalizzata
+- Skip-link accessibilità, aria-modal/aria-labelledby su tutti i dialoghi
+- Badge generati dinamicamente da ROOMS.available
 
 ## Cosa Non Funziona / Limitazioni
 - **Asset mancanti:** servono modelli 3D (.glb), audio (.mp3), immagini target e file .mind

@@ -54,7 +54,16 @@ Ultimo aggiornamento: 2026-03-30
 ## Sprint 2 — Polish e Seconda Sala
 
 ### Da Fare 📋
-- [ ] Test end-to-end su smartphone reale (richede HTTPS — GitHub Pages)
+- [ ] Test end-to-end su smartphone reale (richiede HTTPS — GitHub Pages)
+
+### Completate ✅ Sprint 3
+- [x] Web Share API + ShareService (attestato con bottone condividi) (2026-03-30)
+- [x] AR viewfinder overlay (angoli dorati animati mentre si cerca il target) (2026-03-30)
+- [x] Accessibilità: role=dialog, aria-modal, aria-labelledby su tutti i modali AR (2026-03-30)
+- [x] card.ts: aria-disabled + tabindex=-1 su card disabilitate (2026-03-30)
+- [x] Pagina 404 personalizzata (NotFoundComponent) (2026-03-30)
+- [x] Preload AR libs in RoomMenuComponent (caricamento anticipato) (2026-03-30)
+- [x] Skip-link accessibilità + id="main-content" (2026-03-30)
 
 ### Completate ✅ Sprint 2
 - [x] Generazione QR code per ogni sala (C-09 — /qr)
