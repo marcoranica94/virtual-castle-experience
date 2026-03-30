@@ -54,14 +54,18 @@ Ultimo aggiornamento: 2026-03-30
 ## Sprint 2 — Polish e Seconda Sala
 
 ### Da Fare 📋
-- [ ] L-06: Plausible Analytics — script + custom events (targetFound, quizAnswered, badgeEarned)
-- [ ] Service Worker per cache offline degli asset
+- [ ] Test end-to-end su smartphone reale (richede HTTPS — GitHub Pages)
 
-### Completate ✅
+### Completate ✅ Sprint 2
 - [x] Generazione QR code per ogni sala (C-09 — /qr)
 - [x] Animazioni di transizione tra pagine (routeFade 180ms via @angular/animations) (2026-03-30)
 - [x] Gestione orientamento schermo (overlay portrait-only in AR experience) (2026-03-30)
-- [x] Sala Blu placeholder (già presente in rooms.ts con available: false)
+- [x] Sala Blu placeholder (in rooms.ts con available: false)
+- [x] L-06: Plausible Analytics privacy-first (tagged-events, custom props) (2026-03-30)
+- [x] Service Worker offline (@angular/service-worker, ngsw-config.json) (2026-03-30)
+- [x] G-06: Toast "Badge sbloccato!" in AR experience (effect + signal) (2026-03-30)
+- [x] Badge dinamici in profilo (generati da ROOMS.available, non hardcoded) (2026-03-30)
+- [x] Loading screen AR animata (castlePulse, barra glow, percentuale) (2026-03-30)
 
 ---
 

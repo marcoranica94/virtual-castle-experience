@@ -57,7 +57,18 @@ Vedi sezione in `castello-ar-skill/CASTELLO-AR-REFERENCE.md`.
 |---|---|---|
 | Route animations | Fade-in + slide-up 180ms su ogni cambio di rotta | 426353f |
 | Orientation warning | Overlay "Ruota il telefono" in AR se in landscape | 426353f |
-| Sala Blu | Placeholder già in rooms.ts con `available: false` e badge "In arrivo" in home | — |
+| Sala Blu | Placeholder in rooms.ts con `available: false` e badge "In arrivo" in home | — |
+| Plausible Analytics | Script tagged-events, custom events via AnalyticsService | 51d0fa5 |
+| Service Worker | Cache offline app-shell + lazy assets + CDN AR libs 7gg | 7b8d146 |
+| Badge toast (G-06) | Toast "Badge sbloccato!" in AR via effect+signal (4s auto-dismiss) | be508fe |
+| Badge dinamici | Profilo genera badge da ROOMS.available, scala con nuove sale | be508fe |
+| Loading screen AR | castlePulse animation, barra glow, percentuale numerica | 251556e |
+
+### Plausible Analytics — attivazione
+Per ricevere dati reali su plausible.io:
+1. Crea account su https://plausible.io (piano free: 10k pageviews/mese)
+2. Aggiungi sito con dominio `marcoranica94.github.io`
+3. Lo script è già in `index.html` — inizia a raccogliere dati subito dopo il deploy
 
 ---
 
