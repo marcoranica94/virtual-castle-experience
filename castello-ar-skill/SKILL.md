@@ -118,55 +118,56 @@ Non menzionare all'utente che li stai leggendo — fallo silenziosamente.
 
 **Prima di scrivere codice:**
 - Consulta `CASTELLO-AR-REFERENCE.md` per convenzioni
-- Verifica le versioni CDN delle librerie (vedi sezione Versioni nel Reference)
 - Se aggiungi una dipendenza: `npm install pacchetto@latest` e documenta in `CLAUDE-DOC.md`
+- Leggi SEMPRE i file esistenti prima di modificarli — mai riscrivere da zero
 
 **Regole codice:**
 
-#### HTML/JavaScript
-- HTML5 semantico, `<meta viewport>` sempre presente
-- JavaScript vanilla ES6+ (no framework frontend pesanti — il progetto è statico)
-- Nessun `var` — solo `const` e `let`
+#### Angular / TypeScript
+- **Standalone components** — niente NgModules
+- **Signals** per lo stato reattivo — non RxJS per lo stato UI
+- **Lazy loading** su tutte le route via `loadComponent`
+- **TypeScript strict** — mai `any` senza motivazione documentata in `CLAUDE-DOC.md`
+- Servizi `providedIn: 'root'` (singleton)
+- Nomi file: kebab-case (`ar.service.ts`, `sala-rossa.ts`)
+- Nomi classi: PascalCase (`ArService`, `SalaRossaData`)
+- Template inline per componenti semplici; file `.html` separato per template grandi
 - Commenti in italiano per le sezioni principali
-- Nomi file e cartelle in kebab-case: `sala-rossa`, `visita-culturale.html`
+
+#### Tailwind CSS 4
+- Design tokens via `@theme` in `styles.css` — niente custom CSS fuori dal tema
+- Mobile-first sempre (breakpoint `sm:`, `md:` per desktop)
+- Touch target minimo 44x44px: usa `min-h-[44px] min-w-[44px]` (Apple HIG)
+- Niente `style=""` inline — sempre classi Tailwind
 
 #### WebAR (MindAR + A-Frame)
-- Usa SEMPRE i CDN ufficiali con versione esplicita (vedi Reference)
+- MindAR e A-Frame caricati **dinamicamente** via `ArService.loadLibraries()` — NON in `angular.json` né importati direttamente
 - `vr-mode-ui="enabled: false"` sempre su `<a-scene>`
 - `device-orientation-permission-ui="enabled: false"` sempre
 - Gestisci il permesso fotocamera con UI chiara in italiano
 - Schermata di loading obbligatoria con istruzioni per l'utente
 - Fallback se la fotocamera non è disponibile o il device non supporta AR
+- Cast `window` tramite `unknown` intermedio per TS strict (vedi `CLAUDE-DOC.md`)
 
 #### Asset
 - Modelli 3D: formato `.glb` (non `.gltf` separato — un file unico è più affidabile)
 - Audio: `.mp3` (compatibilità universale)
 - Immagini target: `.jpg` o `.png`, alta risoluzione, molti dettagli
 - File MindAR: `.mind` generati dal compiler ufficiale
-- **Max dimensione per asset singolo: 5 MB** (altrimenti i tempi di caricamento su mobile sono inaccettabili)
-- **Max dimensione totale pagina: 15 MB** (inclusi tutti gli asset)
-- **Max dimensione singolo file su GitHub: 100 MB** (limite GitHub). Non è un problema con asset ottimizzati
-- **Max dimensione repository GitHub: 1 GB** (soft limit). Abbondante per 10+ sale
+- **Max dimensione per asset singolo: 5 MB**
+- **Max dimensione totale bundle + asset caricati al primo accesso: 15 MB**
+- Asset in `public/assets/` — copiati staticamente nel build senza trasformazioni
 
-#### Struttura Cartelle (per ogni sala)
+#### Struttura dati per ogni sala
 ```
-sala-nome/
-├── index.html               ← Menù scelta esperienza
-├── visita-culturale.html    ← AR adulti
-├── caccia-tesoro.html       ← AR bambini
-├── didattica.html           ← AR scuole
-└── assets/
-    ├── models/              ← File .glb
-    ├── audio/               ← File .mp3
-    ├── images/              ← Immagini target originali
-    └── targets/             ← File .mind compilati
+// src/app/data/sala-nome.ts  ← implementa RoomConfig
+// public/assets/sala-nome/
+//   models/    ← File .glb
+//   audio/     ← File .mp3
+//   images/    ← Immagini target originali
+//   targets/   ← File .mind compilati
+// Nessun HTML o route nuovi — ArExperienceComponent è generico
 ```
-
-#### CSS
-- Mobile-first sempre (min-width per desktop, non max-width)
-- Niente framework CSS — CSS vanilla con custom properties
-- Colori e font del castello definiti come variabili CSS in `shared/css/theme.css`
-- Touch target minimo 44x44px (Apple HIG)
 
 ---
 
@@ -203,11 +204,12 @@ fix(caccia-tesoro): correct model position on iOS Safari
 chore(deps): update MindAR to 1.2.5
 ```
 
-**2. Push (= deploy automatico su GitHub Pages):**
+**2. Push e deploy:**
 ```bash
-git push origin main
-# GitHub Pages si aggiorna automaticamente in 1-2 minuti
-# URL: https://[username].github.io/castello-ar/
+git push origin main             # salva il codice sorgente
+
+npm run deploy                   # build + push su gh-pages → GitHub Pages si aggiorna
+# URL: https://marcoranica94.github.io/virtual-castle-experience/
 ```
 
 **3. Aggiorna documentazione** (OBBLIGATORIO):
@@ -252,9 +254,9 @@ git push origin main
 - Mai dire "devi fare X" senza scriverlo in ISTRUZIONI-DEV.md
 
 **Codice:**
-- Mai CDN senza versione esplicita (`latest` nei CDN è instabile)
-- Mai `http://` nei link CDN (la fotocamera richiede HTTPS)
-- Mai file HTML senza `<meta viewport>`
+- Mai `any` in TypeScript senza motivazione documentata
+- Mai importare A-Frame/MindAR direttamente — solo tramite `ArService.loadLibraries()`
+- Mai `http://` (la fotocamera richiede HTTPS)
 - Mai autoplay audio (bloccato su iOS — serve interazione utente)
 - Mai modelli 3D >5 MB senza compressione
 - Mai riscrivere un file da zero quando basta una modifica chirurgica
@@ -262,3 +264,5 @@ git push origin main
 - Mai testare solo su desktop — il progetto è SOLO per mobile
 - Mai hardcodare testi se il progetto supporta più lingue
 - Mai dimenticare il fallback per dispositivi che non supportano AR
+- Mai NgModules — standalone components sempre
+- Mai `style=""` inline — sempre Tailwind classes

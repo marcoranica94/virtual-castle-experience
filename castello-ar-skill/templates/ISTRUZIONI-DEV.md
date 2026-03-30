@@ -14,27 +14,25 @@ Ultimo aggiornamento: [DATA CREAZIONE]
 
 ### Account da creare (tutti gratuiti tranne Claude Pro)
 - [ ] **Claude Pro** ($20/mese) — https://claude.ai (necessario per Claude Code)
-- [ ] **GitHub** — https://github.com (repository codice + hosting con GitHub Pages)
+- [ ] **GitHub** — https://github.com (repository codice)
 - [ ] **Adobe/Mixamo** — https://mixamo.com (per avatar 3D animati)
 - [ ] **ElevenLabs** — https://elevenlabs.io (per generazione audio AI, piano free)
 
 ### Setup progetto
 ```bash
-# 1. Crea repository su GitHub: github.com → New → "castello-ar" → Public
-# 2. Clona il repository
-git clone https://github.com/[TUO-USERNAME]/castello-ar.git
-cd castello-ar
+# 1. Clona il repository
+git clone https://github.com/[TUO-USERNAME]/virtual-castle-experience.git
+cd virtual-castle-experience
 
-# 3. Attiva GitHub Pages:
-#    github.com/[TUO-USERNAME]/castello-ar → Settings → Pages
-#    Source: Deploy from branch → main → / (root) → Save
+# 2. Installa le dipendenze
+npm install
 
-# 4. Dopo 1-2 min il sito è live su:
-#    https://[TUO-USERNAME].github.io/castello-ar/
+# 3. Avvia il server locale
+npm start
+# → Apri http://localhost:4200 nel browser
 
-# 5. Avvia server locale per test durante sviluppo
-npx serve .
-# → Apri http://localhost:3000 nel browser
+# 4. Per il deploy: connetti il repo a Vercel (vercel.com → New Project)
+#    Framework: Angular, Output: dist/castello-ar/browser
 ```
 
 ---
@@ -60,15 +58,15 @@ Quando Claude Code completa una task che richiede un intervento manuale, lo trov
 ### Testare sul telefono (rete locale)
 ```bash
 # Dal terminale, nella cartella del progetto:
-npx serve .
-
-# Ti darà un URL tipo http://192.168.1.X:3000
-# Apri questo URL dal telefono (deve essere sulla stessa rete WiFi)
+npm start
+# → http://localhost:4200
+# Per accedere dal telefono (stessa rete WiFi), usa l'IP della macchina:
+# http://192.168.1.X:4200
 ```
 
-Se serve un URL pubblico temporaneo (per test fuori dalla rete locale):
+Se serve un URL pubblico temporaneo con HTTPS (richiesto per AR):
 ```bash
-npx localtunnel --port 3000
+npx localtunnel --port 4200
 # Ti darà un URL tipo https://xyz.loca.lt
 ```
 
@@ -80,7 +78,7 @@ npx localtunnel --port 3000
    - Molti pallini = tracking stabile ✅
    - Pochi pallini = tracking instabile ❌ → rifai l'immagine con più dettagli
 5. Clicca "Download" per scaricare il file `.mind`
-6. Metti il file nella cartella `sala-nome/assets/targets/`
+6. Metti il file nella cartella `public/assets/sala-nome/targets/`
 
 ### Aggiungere un modello 3D da Mixamo
 1. Vai su https://www.mixamo.com e accedi con account Adobe
@@ -96,7 +94,7 @@ npx localtunnel --port 3000
    - Seleziona il file scaricato
    - File → Export → glTF 2.0 (.glb)
    - Nelle opzioni di export: spunta "Export Animations", Format: "GLB"
-   - Salva nella cartella `sala-nome/assets/models/`
+   - Salva nella cartella `public/assets/sala-nome/models/`
 6. **Verifica dimensione**: deve essere < 5 MB. Se più grande:
    ```bash
    gltf-transform etc1s input.glb output.glb
@@ -108,8 +106,8 @@ npx localtunnel --port 3000
 3. Scegli una voce italiana
 4. Clicca "Generate"
 5. Scarica il file MP3
-6. Metti nella cartella `sala-nome/assets/audio/`
-7. Rinomina in modo descrittivo: `narrazione-sala-rossa-it.mp3`
+6. Metti nella cartella `public/assets/sala-nome/audio/`
+7. Rinomina in modo descrittivo: `narrazione-sala-rossa.mp3`
 
 ### Pubblicare le modifiche online (Deploy)
 ```bash
@@ -118,11 +116,11 @@ git add .
 git commit -m "feat(sala-rossa): descrizione della modifica"
 git push origin main
 
-# GitHub Pages si aggiorna automaticamente in 1-2 minuti
-# Il sito è su: https://[TUO-USERNAME].github.io/castello-ar/
+# Deploy su GitHub Pages
+npm run deploy
+# → build + push su branch gh-pages → sito live in 1-2 min
 
-# Per verificare lo stato del deploy:
-# github.com/[TUO-USERNAME]/castello-ar → Actions → vedi se il build è verde ✅
+# Per verificare: github.com/[USER]/[REPO] → Actions → vedi se è verde ✅
 ```
 
 ---
@@ -149,7 +147,7 @@ git push origin main
 - **File**: verificare che il file .mp3 esista nel path specificato
 
 ### Il caricamento è troppo lento
-- Verificare dimensioni: `ls -lh sala-rossa/assets/models/` — ogni file <5 MB
+- Verificare dimensioni: `ls -lh public/assets/sala-rossa/models/` — ogni file <5 MB
 - Comprimere i modelli con gltf-transform
 - Comprimere le immagini con TinyPNG (tinypng.com)
 - Verificare la connessione: il WiFi del castello è abbastanza veloce?

@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* === Tema Castello — Design tokens Tailwind 4 === */
+@theme {
+  --color-stone: #4a3f35;
+  --color-stone-light: #6b5d4f;
+  --color-stone-dark: #2e2519;
+  --color-gold: #c9a84c;
+  --color-gold-light: #e0c56e;
+  --color-gold-dark: #a08030;
+  --color-parchment: #f5f0e1;
+  --color-parchment-dark: #e8dfc8;
+  --color-sala-red: #8b2f2f;
+  --color-sala-blue: #2f4a8b;
+  --color-garden-green: #3a6b35;
+  --color-castellano: #8b6914;
+  --color-drago: #c0392b;
+  --color-laboratorio: #2471a3;
+  --color-bg: #1a1410;
+  --color-bg-card: #2a2218;
+  --color-text-primary: #f5f0e1;
+  --color-text-muted: #a09880;
+  --color-success: #27ae60;
+  --color-warning: #f39c12;
+  --color-error: #e74c3c;
+
+  --font-family-title: 'Georgia', 'Times New Roman', serif;
+  --font-family-body: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* === Base === */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family-body);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === A-Frame override (nasconde UI VR di default) === */
+.a-canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+}

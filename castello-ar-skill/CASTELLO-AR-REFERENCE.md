@@ -7,139 +7,77 @@ Consultato da Claude Code durante la Fase 0 e la Fase 3 del workflow.
 
 ## Stack Tecnico
 
-| Componente | Tecnologia | Versione Minima | Note |
+| Componente | Tecnologia | Versione in Uso | Note |
 |---|---|---|---|
-| Runtime | Node.js | LTS corrente (verifica nodejs.org) | Solo per dev/build, il progetto finale è statico |
-| AR Engine (Image) | MindAR.js | Ultima stabile (verifica npm/GitHub) | Image tracking + Face tracking |
-| AR Engine (GPS) | AR.js | Ultima stabile (verifica GitHub) | Solo per giardino/esterno — Location-based |
-| Framework 3D | A-Frame | Ultima stabile (verifica aframe.io) | Integrato con MindAR e AR.js |
-| Hosting | GitHub Pages | — | Statico, HTTPS automatico, deploy con git push |
+| Framework | Angular | 21.2.6 | Standalone components, signals, lazy routing |
+| Linguaggio | TypeScript | 5.9.2 | Strict mode — mai `any` |
+| Styling | Tailwind CSS | 4.2.2 | Design tokens via `@theme`, mobile-first |
+| Runtime dev | Node.js | 24.x LTS (verifica nodejs.org) | Solo per dev/build |
+| AR Engine (Image) | MindAR.js | 1.2.5 | Caricato dinamicamente via ArService |
+| AR Engine (GPS) | AR.js | Ultima stabile (verifica GitHub) | Solo per giardino/esterno — futuro |
+| Framework 3D | A-Frame | 1.7.1 | Caricato dinamicamente via ArService |
+| Hosting | Dedicato (Vercel/Netlify/altro) | — | Non GitHub Pages. HTTPS obbligatorio per AR |
 | Modelli 3D | glTF/GLB | 2.0 | Standard web, unico file binario |
 | Audio | MP3 | — | Compatibilità universale |
+| Build | Angular CLI + Vite | 21.2.5 | `npm run build` → `dist/castello-ar/browser/` |
 
 ---
 
-## Hosting — GitHub Pages
+## Build e Deploy
 
-GitHub Pages è la piattaforma primaria per il progetto. È gratuita, include HTTPS, e il deploy avviene automaticamente con `git push`.
+### Sviluppo locale
+```bash
+npm start                # ng serve → http://localhost:4200
+```
 
-### Setup Iniziale (una volta)
+### Build produzione
+```bash
+npm run build            # output in dist/castello-ar/browser/
+```
+
+### Deploy su GitHub Pages
+
+Il progetto usa `angular-cli-ghpages` per il deploy automatico.
 
 ```bash
-# 1. Crea repository su GitHub (github.com → New repository)
-#    Nome: castello-ar
-#    Visibilità: Public (necessario per GitHub Pages gratuito)
-
-# 2. Clona e inizializza
-git clone https://github.com/[TUO-USERNAME]/castello-ar.git
-cd castello-ar
-
-# 3. Crea il primo file e pusha
-git add .
-git commit -m "chore: initial project structure"
-git push origin main
-
-# 4. Attiva GitHub Pages:
-#    - Vai su github.com/[TUO-USERNAME]/castello-ar/settings/pages
-#    - Source: "Deploy from a branch"
-#    - Branch: main
-#    - Folder: / (root)
-#    - Salva
-
-# 5. Dopo 1-2 minuti il sito è live su:
-#    https://[TUO-USERNAME].github.io/castello-ar/
+npm run deploy
+# Equivale a: ng deploy
+# 1. Esegue ng build --configuration production (con baseHref automatico)
+# 2. Pusha dist/castello-ar/browser/ sul branch gh-pages
+# 3. GitHub Pages serve il sito su:
+#    https://marcoranica94.github.io/virtual-castle-experience/
 ```
 
-### Deploy (ogni volta)
+**Setup iniziale GitHub Pages (una volta):**
+1. Vai su github.com/marcoranica94/virtual-castle-experience → Settings → Pages
+2. Source: "Deploy from a branch"
+3. Branch: `gh-pages` → `/ (root)` → Save
+4. Dopo il primo `npm run deploy` il sito sarà live
 
+**Note tecniche:**
+- `baseHref` impostato a `/virtual-castle-experience/` in `angular.json` (configurazione production)
+- Routing con `withHashLocation()` — URL tipo `.../#/sala/rossa` (necessario per GitHub Pages)
+- Il branch `gh-pages` viene gestito interamente da `angular-cli-ghpages`, non modificarlo manualmente
+
+### Dominio personalizzato (opzionale)
+1. Nelle impostazioni GitHub Pages → Custom domain → inserisci: `ar.rocca-albani.it`
+2. Nel DNS del dominio, aggiungi record CNAME: `ar.rocca-albani.it → marcoranica94.github.io`
+3. Spunta "Enforce HTTPS"
+4. Aggiorna `baseHref` in `angular.json` da `/virtual-castle-experience/` a `/`
+
+### Come verificare le versioni delle dipendenze
 ```bash
-git add .
-git commit -m "feat(sala-rossa): descrizione modifica"
-git push origin main
-# GitHub Pages si aggiorna automaticamente in 1-2 minuti
-```
+# Versioni installate
+cat package.json
 
-### Limiti GitHub Pages
+# Angular ultima stabile
+npm view @angular/core version
 
-| Limite | Valore | Impatto |
-|---|---|---|
-| Dimensione repository | 1 GB (soft limit) | OK — con asset ottimizzati, 10+ sale stanno comodamente |
-| Dimensione singolo file | 100 MB | OK — i nostri asset sono tutti <5 MB |
-| Bandwidth mensile | 100 GB | OK — più che sufficiente per un castello |
-| Build al minuto | 10 | OK — non facciamo build, sono file statici |
-| Siti per account | illimitati | OK |
-
-### Dominio Personalizzato (opzionale)
-
-Se vuoi un URL tipo `ar.castello-xyz.it` invece di `username.github.io/castello-ar`:
-
-```
-# 1. Nelle impostazioni GitHub Pages → Custom domain → inserisci: ar.castello-xyz.it
-# 2. Nel DNS del dominio, aggiungi un record CNAME:
-#    ar.castello-xyz.it → [TUO-USERNAME].github.io
-# 3. Spunta "Enforce HTTPS"
-# 4. Aspetta qualche ora per la propagazione DNS
-```
-
-### Path Relativi — ATTENZIONE
-
-GitHub Pages serve il sito da `https://username.github.io/castello-ar/` (con sottocartella).
-Tutti i link interni DEVONO essere **relativi**, mai assoluti:
-
-```html
-<!-- ✅ CORRETTO — path relativo -->
-<a href="sala-rossa/index.html">Sala Rossa</a>
-<script src="shared/js/ar-utils.js"></script>
-<a-asset-item src="assets/models/cavaliere.glb"></a-asset-item>
-
-<!-- ❌ SBAGLIATO — path assoluto (non funziona su GitHub Pages) -->
-<a href="/sala-rossa/index.html">Sala Rossa</a>
-<script src="/shared/js/ar-utils.js"></script>
-```
-
-### Firebase — NON necessario per la demo
-
-Il progetto è interamente statico. Il sistema punti/badge usa localStorage del browser.
-Firebase servirebbe solo in futuro per: classifica condivisa tra visitatori, dati sincronizzati
-tra dispositivi, o AI narrativa con backend. Per la demo e il lancio iniziale: **non serve**.
-
-### Migrazione futura (se necessario)
-
-Se un giorno servisse un backend (serverless functions per AI, database condiviso):
-- Migrare su **Vercel** (che Marco già conosce) → stesso deploy da GitHub, stessi file
-- Oppure aggiungere Firebase solo per le funzionalità che lo richiedono
-- Il codice frontend resta identico, cambia solo l'hosting
-
-### Come Verificare le Versioni
-
-**Prima di ogni sessione di sviluppo**, verifica:
-
-```bash
-# MindAR — ultima versione
+# MindAR ultima stabile
 npm view mind-ar version
-
-# A-Frame — ultima versione
-npm view aframe version
 
 # Node.js LTS
 node --version  # Confronta con https://nodejs.org
-```
-
-**Nei file HTML, usa i CDN con versione esplicita:**
-
-```html
-<!-- TEMPLATE — sostituisci X.Y.Z con la versione verificata -->
-<script src="https://aframe.io/releases/X.Y.Z/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mind-ar@X.Y.Z/dist/mindar-image-aframe.prod.js"></script>
-```
-
-**MAI usare:**
-```html
-<!-- ❌ SBAGLIATO — versione non specificata -->
-<script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
-
-<!-- ❌ SBAGLIATO — versione troppo vecchia -->
-<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
 ```
 
 ---
@@ -157,8 +95,11 @@ Ultimo aggiornamento: [data]
 <!-- Ogni decisione tecnica importante va qui con data e motivazione -->
 
 ## Versioni in Uso
-| Libreria | Versione | Data Aggiornamento |
+| Libreria | Versione | Data |
 |---|---|---|
+| Angular | X.Y.Z | [data] |
+| TypeScript | X.Y.Z | [data] |
+| Tailwind CSS | X.Y.Z | [data] |
 | MindAR | X.Y.Z | [data] |
 | A-Frame | X.Y.Z | [data] |
 | Node.js | X.Y.Z | [data] |
@@ -187,28 +128,28 @@ Ultimo aggiornamento: [data]
 
 ## Setup Iniziale (da fare una volta)
 - [ ] Installare Node.js LTS da https://nodejs.org
-- [ ] Installare Claude Code: `npm install -g @anthropic-ai/claude-code`
-- [ ] Creare account Netlify gratuito su https://netlify.com
-- [ ] Creare account Adobe gratuito per Mixamo su https://mixamo.com
-- [ ] Installare Blender da https://blender.org (per conversione modelli)
 - [ ] Clonare il repository: `git clone [URL]`
-- [ ] Entrare nella cartella: `cd castello-ar`
+- [ ] Entrare nella cartella: `cd virtual-castle-experience`
+- [ ] Installare dipendenze: `npm install`
+- [ ] Avviare il dev server: `npm start` → http://localhost:4200
 
 ## Azioni Manuali Pendenti
-<!-- Task che richiedono intervento umano: test dispositivo, caricare asset, stampare -->
+<!-- Task che richiedono intervento umano: test dispositivo, caricare asset, ecc. -->
 
 ## Come Testare
-1. Avvia server locale: `npx serve .` (dalla root del progetto)
-2. Apri `https://localhost:3000` dal telefono (stesso WiFi)
-   - Oppure usa `npx localtunnel --port 3000` per un URL pubblico temporaneo
-3. Naviga alla sala da testare
-4. Concedi permesso fotocamera
-5. Inquadra il pannello target stampato
+### In locale (navigazione e UI)
+```bash
+npm start
+# Apri http://localhost:4200 su browser desktop o mobile (stesso WiFi)
+```
+
+### AR su smartphone (richiede HTTPS)
+1. Deploy su Vercel/Netlify (HTTPS automatico) — metodo consigliato
+2. Oppure: `npx localtunnel --port 4200` — URL HTTPS temporaneo
 
 ## Come Pubblicare (Deploy)
-1. Push su GitHub: `git push origin main`
-2. Netlify fa deploy automatico (se configurato)
-   - Oppure: trascina la cartella del progetto su app.netlify.com/drop
+1. `npm run build` → genera `dist/castello-ar/browser/`
+2. Push su GitHub → Vercel/Netlify fa deploy automatico (se configurato)
 
 ## Come Generare File .mind (Target AR)
 1. Vai su https://hiukim.github.io/mind-ar-js-doc/tools/compile
@@ -216,7 +157,7 @@ Ultimo aggiornamento: [data]
 3. Clicca "Start"
 4. Verifica i feature point (pallini rossi) — devono essere molti
 5. Scarica il file .mind
-6. Metti nella cartella `sala-nome/assets/targets/`
+6. Metti nella cartella `public/assets/sala-nome/targets/`
 
 ## Come Aggiungere un Modello 3D da Mixamo
 1. Vai su https://www.mixamo.com
@@ -227,7 +168,7 @@ Ultimo aggiornamento: [data]
 6. File → Export → glTF 2.0 (.glb)
    - Spunta: "Export Animations"
    - Format: GLB (binary)
-7. Metti il .glb nella cartella `sala-nome/assets/models/`
+7. Metti il .glb nella cartella `public/assets/sala-nome/models/`
 
 ## Troubleshooting
 <!-- Problemi comuni e soluzioni -->
@@ -274,13 +215,14 @@ Ultimo aggiornamento: [data]
 
 | Elemento | Convenzione | Esempio |
 |---|---|---|
-| Cartelle sala | kebab-case | `sala-rossa`, `sala-blu`, `giardino` |
-| File HTML | kebab-case | `visita-culturale.html`, `caccia-tesoro.html` |
-| File asset | kebab-case descrittivo | `cavaliere-parlante.glb`, `narrazione-sala-rossa-it.mp3` |
+| Cartelle sala (asset) | kebab-case | `sala-rossa`, `sala-blu`, `giardino` |
+| File TypeScript | kebab-case | `ar.service.ts`, `sala-rossa.ts`, `progress-bar.ts` |
+| Classi Angular | PascalCase | `ArService`, `ProgressBarComponent`, `SalaRossaData` |
+| File asset | kebab-case descrittivo | `cavaliere-parlante.glb`, `narrazione-sala-rossa.mp3` |
 | File target | kebab-case + tipo | `target-adulti.mind`, `target-bambini.mind` |
-| ID CSS/HTML | kebab-case | `btn-ascolta`, `ar-scene-adulti` |
-| Variabili JS | camelCase | `arScene`, `audioPlayer`, `targetFound` |
-| Costanti JS | UPPER_SNAKE | `MAX_AUDIO_DURATION`, `MODEL_SCALE` |
+| Variabili TS | camelCase | `arScene`, `audioPlayer`, `targetFound` |
+| Costanti TS | UPPER_SNAKE | `MAX_AUDIO_DURATION`, `MODEL_SCALE` |
+| Signals Angular | camelCase | `isLoading`, `currentRoom`, `userPoints` |
 | Commit | Conventional Commits EN | `feat(sala-rossa): add knight avatar` |
 | Branch | tipo/descrizione | `feat/sala-blu`, `fix/ios-audio-bug` |
 
@@ -307,14 +249,12 @@ Quando si aggiunge una nuova sala, seguire questa checklist:
 - [ ] Generare audio con ElevenLabs o registrare
 
 ### Sviluppo (Claude Code)
-- [ ] Duplicare struttura da sala esistente
-- [ ] Aggiornare index.html della sala (titolo, tema)
-- [ ] Aggiornare visita-culturale.html (nuovo target, nuovo avatar, nuovo audio)
-- [ ] Aggiornare caccia-tesoro.html (nuovo target, nuovo personaggio, nuovo indizio)
-- [ ] Aggiornare didattica.html (nuovi contenuti informativi)
-- [ ] Aggiornare index generale con nuova sala
-- [ ] Verificare tutti i path dei file
-- [ ] Test automatici (link, dimensioni, HTML valido)
+- [ ] Creare `src/app/data/sala-nome.ts` con i dati tipizzati (implementa `RoomConfig`)
+- [ ] Registrare la sala in `src/app/data/rooms.ts`
+- [ ] Copiare gli asset in `public/assets/sala-nome/` (models/, audio/, images/, targets/)
+- [ ] Verificare che i path asset in `sala-nome.ts` corrispondano alla struttura in `public/`
+- [ ] `ng build` — verifica che la compilazione TS sia senza errori
+- [ ] Nessun HTML/route nuovo necessario — `ArExperienceComponent` è generico
 
 ### Test (Utente)
 - [ ] Test iPhone Safari

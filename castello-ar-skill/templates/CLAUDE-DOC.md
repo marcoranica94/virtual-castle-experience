@@ -11,30 +11,37 @@ Ultimo aggiornamento: [DATA CREAZIONE]
 **Motivazione:** Zero installazione per i visitatori, costi minimi, aggiornamenti istantanei, sviluppabile con Claude Code.
 **Alternative scartate:** App nativa iOS/Android (troppo costosa, richiede store, manutenzione doppia).
 
-### [DATA] — Hosting su GitHub Pages
-**Decisione:** GitHub Pages come piattaforma di hosting primaria.
-**Motivazione:** Gratuito, HTTPS incluso, deploy automatico con git push, nessun servizio aggiuntivo da gestire. Il progetto è 100% statico (HTML/JS/CSS + asset), perfetto per GitHub Pages.
-**Alternative valutate:** Netlify (equivalente ma servizio in più da gestire), Vercel (idem), Firebase (overengineering — non serve un DB per la demo).
-**Limiti accettati:** Repository deve essere public (piano gratuito). Max 1 GB repo, 100 MB per file, 100 GB bandwidth/mese — tutti ampiamente sufficienti.
+### [DATA] — Stack Angular 21 + TypeScript strict + Tailwind CSS 4
+**Decisione:** Angular 21 con standalone components, signals, lazy routing.
+**Motivazione:** TypeScript nativo, tutto incluso (routing, DI), architettura scalabile, SSR-ready per il futuro. Tailwind per design system con @theme tokens. Niente HTML/JS vanilla.
+**Alternative scartate:** Vue/React (meno opinionated, più boilerplate per TypeScript strict), HTML vanilla (non scalabile).
+
+### [DATA] — Hosting su GitHub Pages con angular-cli-ghpages
+**Decisione:** GitHub Pages come hosting, con `angular-cli-ghpages` per automatizzare build + deploy.
+**Motivazione:** Gratuito, HTTPS incluso, `npm run deploy` fa tutto. Angular non può usare GitHub Pages "nativo" (nessun build step), ma `angular-cli-ghpages` risolve: fa il build e pusha il risultato sul branch `gh-pages`.
+**Dettagli tecnici:** `baseHref: /[REPO-NAME]/` in `angular.json`, routing con `withHashLocation()` per SPA su GitHub Pages.
 
 ### [DATA] — Nessun database per la demo
 **Decisione:** localStorage del browser per punti/badge. Nessun Firebase o backend.
 **Motivazione:** Zero costi, zero complessità. I dati sono locali al dispositivo del visitatore. Sufficiente per validare l'esperienza.
-**Evoluzione futura:** Se servisse una classifica condivisa o sincronizzazione, aggiungere Firebase Realtime DB o migrare hosting su Vercel con serverless functions.
+**Evoluzione futura:** Se servisse una classifica condivisa, aggiungere Firebase o Supabase.
 
-### [DATA] — Struttura multi-esperienza
-**Decisione:** Ogni sala ha 3 esperienze selezionabili (Culturale, Caccia al Tesoro, Didattica).
-**Motivazione:** Massima flessibilità per pubblici diversi. Ogni esperienza è un file HTML separato per semplicità.
+### [DATA] — Struttura multi-esperienza generica
+**Decisione:** Ogni sala ha 3 esperienze gestite dallo stesso componente `ArExperienceComponent`.
+**Motivazione:** Zero codice nuovo per aggiungere una sala — basta aggiungere un file `.ts` con i dati tipizzati e gli asset in `public/`.
 
 ---
 
 ## Versioni in Uso
 
-| Libreria | Versione | Data Aggiornamento | CDN |
-|---|---|---|---|
-| MindAR | [VERIFICARE] | [DATA] | cdn.jsdelivr.net/npm/mind-ar@VERSION |
-| A-Frame | [VERIFICARE] | [DATA] | aframe.io/releases/VERSION/aframe.min.js |
-| Node.js | [VERIFICARE] | [DATA] | — (solo dev locale) |
+| Libreria | Versione | Data |
+|---|---|---|
+| Angular | [VERIFICARE] | [DATA] |
+| TypeScript | [VERIFICARE] | [DATA] |
+| Tailwind CSS | [VERIFICARE] | [DATA] |
+| MindAR | [VERIFICARE] | [DATA] |
+| A-Frame | [VERIFICARE] | [DATA] |
+| Node.js | [VERIFICARE] | [DATA] |
 
 ⚠️ **Regola:** Prima di ogni sessione di sviluppo, verifica che queste siano le ultime versioni stabili.
 
