@@ -26,6 +26,10 @@ export const routes: Routes = [
     loadComponent: () => import('./routes/attestato/attestato').then(m => m.AttestatiComponent),
   },
   {
+    path: 'privacy',
+    loadComponent: () => import('./routes/privacy/privacy').then(m => m.PrivacyComponent),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

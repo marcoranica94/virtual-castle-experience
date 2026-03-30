@@ -61,6 +61,16 @@ import { ROOMS } from '../../data/rooms';
         ❓ Come funziona
       </a>
     </div>
+
+    <!-- Footer -->
+    <div class="mt-8 pt-4 border-t border-stone text-center">
+      <p class="text-[0.65rem] text-text-muted">
+        Rocca Albani di Urgnano · Esperienza AR<br>
+        <a routerLink="/privacy" class="text-text-muted underline">Privacy e fotocamera</a>
+        &nbsp;·&nbsp;
+        <a routerLink="/tutorial" class="text-text-muted underline">Come funziona</a>
+      </p>
+    </div>
   `,
 })
 export class HomeComponent {
