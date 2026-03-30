@@ -534,14 +534,16 @@ Framework vendibile ad altri castelli, musei, borghi, scuole. Quello che si sta 
 **Obiettivo:** Asset reali pronti per integrazione.
 
 **Task Claude Code:**
-- ☐ D-03 — Mini-tutorial pre-AR (prima visita)
-- ☐ D-13 — Pulsante "Non funziona?"
-- ☐ C-01, C-02 — Copioni narrazione Sala Rossa (testi placeholder storici realistici)
-- ☐ C-07 — Quiz reali sulla Sala Rossa
-- ☐ C-09 — Testi cartelli QR
-- ☐ G-05 — Pagina attestato stampabile
+- ✅ D-03 — Mini-tutorial pre-AR (prima visita, localStorage)
+- ✅ D-13 — Pulsante "Non funziona?" + modale troubleshooting
+- ✅ C-01, C-02 — Copioni storici realistici Rocca Albani (Castellano 90s + Drago 70s)
+- ✅ C-07 — Quiz reale: anno fondazione 1354, Visconti
+- ✅ G-05 — Pagina attestato stampabile (/attestato, @media print)
+- ✅ PWA manifest.webmanifest — installabile da smartphone
+- ☐ C-09 — Testi cartelli QR + pagina /qr stampabile con QR code per ogni sala
+- ☐ G-04 — Riconoscimento Drago visitatori di ritorno ("Bentornato!")
 - ☐ L-05 — Privacy/GDPR notice
-- ☐ PWA manifest (installabile da smartphone)
+- ☐ L-06 — Analytics Plausible
 
 **Task Utente (parallele):**
 - Q-04 — Test connettività nella Sala Rossa (PRIORITÀ ASSOLUTA)
@@ -552,7 +554,22 @@ Framework vendibile ad altri castelli, musei, borghi, scuole. Quello che si sta 
 
 ---
 
-### SPRINT 2 — INTEGRAZIONE ASSET (da pianificare)
+### SPRINT 2 — POLISH UI/UX (Claude Code, in corso)
+
+**Obiettivo:** Esperienza utente rifinita prima dell'arrivo degli asset.
+
+**Task Claude Code:**
+- ☐ Animazioni di transizione tra route (Angular animations)
+- ☐ Warning orientamento schermo (portrait → landscape per AR)
+- ☐ Seconda sala placeholder (Sala Blu — struttura dati + "Prossimamente")
+- ☐ Route /privacy — informativa fotocamera e dati
+- ☐ Pagina /qr — QR code stampabili per ogni sala con istruzioni cartello fisico
+- ☐ G-04 — Dragon returning visitor greeting
+- ☐ L-06 — Plausible Analytics setup
+
+---
+
+### SPRINT 3 — INTEGRAZIONE ASSET (da pianificare)
 
 **Obiettivo:** Asset reali integrati, esperienze complete. Dimostrabile.
 

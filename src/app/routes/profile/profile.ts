@@ -86,6 +86,12 @@ interface BadgeDefinition {
       🖨️ Stampa attestato di visita
     </a>
 
+    <!-- QR code -->
+    <a routerLink="/qr"
+       class="flex items-center justify-center gap-2 w-full min-h-11 mt-2 px-4 py-3 bg-stone text-parchment font-semibold rounded-xl no-underline active:scale-[0.97] transition-transform text-sm">
+      📲 Cartelli QR per le sale
+    </a>
+
     <!-- Reset -->
     <button
       class="block mx-auto mt-8 text-xs text-text-muted opacity-50 bg-transparent border-none cursor-pointer"

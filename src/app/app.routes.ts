@@ -30,6 +30,10 @@ export const routes: Routes = [
     loadComponent: () => import('./routes/privacy/privacy').then(m => m.PrivacyComponent),
   },
   {
+    path: 'qr',
+    loadComponent: () => import('./routes/qr/qr').then(m => m.QrPageComponent),
+  },
+  {
     path: '**',
     redirectTo: '',
   },
