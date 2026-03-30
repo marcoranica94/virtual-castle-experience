@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProgressService } from '../../services/progress.service';
+import { ShareService } from '../../services/share.service';
 
 @Component({
   selector: 'app-attestato',
@@ -10,12 +11,22 @@ import { ProgressService } from '../../services/progress.service';
     <!-- Barra superiore (nascosta in stampa) -->
     <div class="no-print flex items-center justify-between px-4 pt-4 pb-2">
       <a routerLink="/profilo" class="text-text-muted text-sm no-underline">← Il mio zaino</a>
-      <button
-        class="min-h-10 px-4 py-2 bg-gold text-stone-dark font-semibold rounded-lg text-sm"
-        onclick="window.print()"
-      >
-        🖨️ Stampa attestato
-      </button>
+      <div class="flex gap-2">
+        <button
+          class="min-h-10 px-3 py-2 bg-stone text-parchment font-semibold rounded-lg text-sm flex items-center gap-1"
+          (click)="shareAttestate()"
+          aria-label="Condividi il link alla Rocca Albani AR"
+        >
+          {{ shareLabel() }}
+        </button>
+        <button
+          class="min-h-10 px-4 py-2 bg-gold text-stone-dark font-semibold rounded-lg text-sm"
+          onclick="window.print()"
+          aria-label="Stampa attestato di visita"
+        >
+          🖨️ Stampa
+        </button>
+      </div>
     </div>
 
     <!-- Foglio attestato (ottimizzato A4) -->
@@ -117,6 +128,21 @@ import { ProgressService } from '../../services/progress.service';
 })
 export class AttestatiComponent {
   readonly progress = inject(ProgressService);
+  private readonly share = inject(ShareService);
+
+  readonly shareLabel = signal('🔗 Condividi');
+
+  async shareAttestate(): Promise<void> {
+    const result = await this.share.share({
+      title: 'Rocca Albani AR — Urgnano',
+      text: `Ho esplorato la Rocca Albani in Realtà Aumentata e raccolto ${this.progress.points()} punti! Prova anche tu 🏰`,
+      url: 'https://marcoranica94.github.io/virtual-castle-experience/',
+    });
+    if (result === 'copied') {
+      this.shareLabel.set('✅ Link copiato!');
+      setTimeout(() => this.shareLabel.set('🔗 Condividi'), 2500);
+    }
+  }
 
   getRank(): { title: string; icon: string } | null {
     const p = this.progress.points();

@@ -7,14 +7,16 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   template: `
     <a
-      [routerLink]="link"
+      [routerLink]="disabled ? null : link"
       class="block bg-bg-card border border-stone rounded-xl p-5 mb-3 transition-all duration-200 active:scale-[0.97] active:border-gold"
       [class.opacity-40]="disabled"
       [class.pointer-events-none]="disabled"
+      [attr.aria-disabled]="disabled || null"
+      [attr.tabindex]="disabled ? -1 : null"
       [style.border-left]="accentColor ? '4px solid ' + accentColor : ''"
     >
       @if (icon) {
-        <div class="text-3xl mb-2">{{ icon }}</div>
+        <div class="text-3xl mb-2" aria-hidden="true">{{ icon }}</div>
       }
       <div class="font-[family-name:var(--font-family-title)] text-gold text-lg mb-1">
         {{ title }}

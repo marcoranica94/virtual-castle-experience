@@ -19,9 +19,10 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
   template: `
     <!-- G-04: Toast "Bentornato" per visitatori di ritorno (Drago) -->
     @if (showReturnGreeting()) {
-      <div class="fixed inset-0 bg-bg/90 flex flex-col items-center justify-center z-[1002] px-6 text-center animate-[fadeIn_0.3s_ease]">
+      <div role="dialog" aria-modal="true" aria-labelledby="return-greeting-title"
+           class="fixed inset-0 bg-bg/90 flex flex-col items-center justify-center z-[1002] px-6 text-center animate-[fadeIn_0.3s_ease]">
         <div class="text-6xl mb-4">🐉</div>
-        <h2 class="font-[family-name:var(--font-family-title)] text-gold text-2xl mb-2">Bentornato, Esploratore!</h2>
+        <h2 id="return-greeting-title" class="font-[family-name:var(--font-family-title)] text-gold text-2xl mb-2">Bentornato, Esploratore!</h2>
         <p class="text-text-muted text-sm max-w-xs mb-8">
           Il Drago Custode ti ricorda! Sei pronto per una nuova missione alla Rocca Albani?
         </p>
@@ -36,9 +37,10 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
 
     <!-- D-03: Mini-tutorial pre-AR (solo prima visita) -->
     @if (showArTutorial()) {
-      <div class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1002] px-6 text-center animate-[fadeIn_0.3s_ease]">
-        <h2 class="font-[family-name:var(--font-family-title)] text-gold text-xl mb-2">
-          {{ experience?.icon }} {{ experience?.title }}
+      <div role="dialog" aria-modal="true" aria-labelledby="ar-tutorial-title"
+           class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1002] px-6 text-center animate-[fadeIn_0.3s_ease]">
+        <h2 id="ar-tutorial-title" class="font-[family-name:var(--font-family-title)] text-gold text-xl mb-2">
+          <span aria-hidden="true">{{ experience?.icon }}</span> {{ experience?.title }}
         </h2>
         <p class="text-text-muted text-sm mb-8">Come funziona l'esperienza AR</p>
 
@@ -212,6 +214,20 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
       </div>
     }
 
+    <!-- Viewfinder: rettangolo di scansione (scena pronta, target non trovato) -->
+    @if (sceneReady() && !targetFound()) {
+      <div class="fixed inset-0 z-30 flex items-center justify-center pointer-events-none" aria-hidden="true">
+        <div class="relative w-56 h-56"
+             style="animation: castlePulse 2.5s ease-in-out infinite">
+          <!-- Angoli del viewfinder -->
+          <span class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-gold rounded-tl-sm"></span>
+          <span class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-gold rounded-tr-sm"></span>
+          <span class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-gold rounded-bl-sm"></span>
+          <span class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-gold rounded-br-sm"></span>
+        </div>
+      </div>
+    }
+
     <!-- Barra aiuto se target non trovato (dopo 15 sec) -->
     @if (sceneReady() && !targetFound() && showScanHint()) {
       <div class="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
@@ -257,9 +273,11 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
 
     <!-- D-13: Modale "Non funziona?" -->
     @if (showHelp()) {
-      <div class="fixed inset-0 bg-black/80 z-[1003] flex items-end justify-center p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]" (click)="showHelp.set(false)">
+      <div class="fixed inset-0 bg-black/80 z-[1003] flex items-end justify-center p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+           role="dialog" aria-modal="true" aria-labelledby="help-modal-title"
+           (click)="showHelp.set(false)">
         <div class="bg-bg-card border border-stone rounded-2xl w-full max-w-sm p-5" (click)="$event.stopPropagation()">
-          <h3 class="font-[family-name:var(--font-family-title)] text-gold text-lg mb-4">❓ Non funziona?</h3>
+          <h3 id="help-modal-title" class="font-[family-name:var(--font-family-title)] text-gold text-lg mb-4">❓ Non funziona?</h3>
           <ul class="space-y-3 mb-5">
             @for (tip of helpTips; track tip.icon) {
               <li class="flex gap-3 text-sm text-text-muted">
