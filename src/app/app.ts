@@ -14,7 +14,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ]),
   ],
   template: `
-    <div class="max-w-lg mx-auto px-4 pb-12 min-h-dvh"
+    <div id="main-content" class="max-w-lg mx-auto px-4 pb-12 min-h-dvh"
          [@routeFade]="prepareRoute(outlet)">
       <router-outlet #outlet="outlet" />
     </div>

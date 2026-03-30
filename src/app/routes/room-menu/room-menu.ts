@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CardComponent } from '../../components/card/card';
 import { ProgressService } from '../../services/progress.service';
+import { ArService } from '../../services/ar.service';
 import { getRoomById } from '../../data/rooms';
 import type { RoomConfig, ExperienceType } from '../../types';
 
@@ -62,6 +63,7 @@ export class RoomMenuComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly progress = inject(ProgressService);
+  private readonly arService = inject(ArService);
 
   room: RoomConfig | undefined;
 
@@ -70,6 +72,11 @@ export class RoomMenuComponent implements OnInit {
     if (!roomId) { this.router.navigate(['/']); return; }
     this.room = getRoomById(roomId);
     if (!this.room || !this.room.available) { this.router.navigate(['/']); return; }
+
+    // Precarica MindAR + A-Frame in background mentre l'utente sceglie l'esperienza
+    if (this.arService.checkCompatibility().supported) {
+      this.arService.loadArLibraries().catch(() => { /* silenzioso, riprova in ArExperience */ });
+    }
   }
 
   getColor(key: string): string {
