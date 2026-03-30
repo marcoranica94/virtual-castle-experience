@@ -16,6 +16,23 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
   standalone: true,
   imports: [ProgressBarComponent, SubtitleOverlayComponent, QuizComponent, InfoPanelComponent],
   template: `
+    <!-- G-04: Toast "Bentornato" per visitatori di ritorno (Drago) -->
+    @if (showReturnGreeting()) {
+      <div class="fixed inset-0 bg-bg/90 flex flex-col items-center justify-center z-[1002] px-6 text-center animate-[fadeIn_0.3s_ease]">
+        <div class="text-6xl mb-4">🐉</div>
+        <h2 class="font-[family-name:var(--font-family-title)] text-gold text-2xl mb-2">Bentornato, Esploratore!</h2>
+        <p class="text-text-muted text-sm max-w-xs mb-8">
+          Il Drago Custode ti ricorda! Sei pronto per una nuova missione alla Rocca Albani?
+        </p>
+        <button
+          class="min-h-12 px-8 py-3 bg-drago text-white font-semibold rounded-xl text-lg active:scale-[0.97] transition-transform"
+          (click)="dismissReturnGreeting()"
+        >
+          Sì, sono pronto! 🐾
+        </button>
+      </div>
+    }
+
     <!-- D-03: Mini-tutorial pre-AR (solo prima visita) -->
     @if (showArTutorial()) {
       <div class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1002] px-6 text-center animate-[fadeIn_0.3s_ease]">
@@ -252,6 +269,7 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
   readonly infoPanelVisible = signal(false);
   readonly infoPanelMode = signal<'info' | 'timeline'>('info');
   readonly showHelp = signal(false);
+  readonly showReturnGreeting = signal(false);
 
   readonly helpTips = [
     { icon: '💡', text: 'Assicurati di essere in un luogo ben illuminato.' },
@@ -268,6 +286,7 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
   private labPanelOpened = false;
 
   private static readonly TUTORIAL_KEY = 'arTutorialSeen';
+  private static readonly DRAGO_VISITED_KEY = 'dragoVisited';
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -278,6 +297,16 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
     this.experience = getExperience(this.roomId, expType);
     if (!this.experience) { this.router.navigate(['/']); return; }
 
+    // G-04: saluta visitatori di ritorno del Drago
+    if (this.experience.type === 'drago') {
+      const dragoVisited = localStorage.getItem(ArExperienceComponent.DRAGO_VISITED_KEY);
+      if (dragoVisited) {
+        this.showReturnGreeting.set(true);
+        return;
+      }
+      localStorage.setItem(ArExperienceComponent.DRAGO_VISITED_KEY, '1');
+    }
+
     // D-03: mostra tutorial solo alla prima visita
     const tutorialSeen = localStorage.getItem(ArExperienceComponent.TUTORIAL_KEY);
     if (!tutorialSeen) {
@@ -285,6 +314,17 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
       return; // la vera init parte al click "Ho capito"
     }
 
+    this.startArInit();
+  }
+
+  /** G-04: chiamato al click "Sì, sono pronto!" */
+  dismissReturnGreeting(): void {
+    this.showReturnGreeting.set(false);
+    const tutorialSeen = localStorage.getItem(ArExperienceComponent.TUTORIAL_KEY);
+    if (!tutorialSeen) {
+      this.showArTutorial.set(true);
+      return;
+    }
     this.startArInit();
   }
 
