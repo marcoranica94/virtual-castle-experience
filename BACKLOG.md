@@ -54,14 +54,14 @@ Ultimo aggiornamento: 2026-03-30
 ## Sprint 2 — Polish e Seconda Sala
 
 ### Da Fare 📋
-- [ ] Animazioni di transizione tra pagine (Angular animations)
-- [ ] Gestione orientamento schermo (warning portrait→landscape su AR)
-- [ ] Seconda sala (Sala Blu) — creare solo il file dati + asset
 - [ ] L-06: Plausible Analytics — script + custom events (targetFound, quizAnswered, badgeEarned)
 - [ ] Service Worker per cache offline degli asset
 
 ### Completate ✅
 - [x] Generazione QR code per ogni sala (C-09 — /qr)
+- [x] Animazioni di transizione tra pagine (routeFade 180ms via @angular/animations) (2026-03-30)
+- [x] Gestione orientamento schermo (overlay portrait-only in AR experience) (2026-03-30)
+- [x] Sala Blu placeholder (già presente in rooms.ts con available: false)
 
 ---
 

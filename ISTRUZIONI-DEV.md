@@ -51,6 +51,16 @@ Vedi sezione in `castello-ar-skill/CASTELLO-AR-REFERENCE.md`.
 
 ---
 
+## Funzionalità Implementate (Sprint 2)
+
+| Feature | Descrizione | Commit |
+|---|---|---|
+| Route animations | Fade-in + slide-up 180ms su ogni cambio di rotta | 426353f |
+| Orientation warning | Overlay "Ruota il telefono" in AR se in landscape | 426353f |
+| Sala Blu | Placeholder già in rooms.ts con `available: false` e badge "In arrivo" in home | — |
+
+---
+
 ## Funzionalità Implementate (Sprint 1)
 
 | Route | Descrizione | Commit |
