@@ -52,8 +52,8 @@ const AUDIENCE_COLORS: Record<string, string> = {
 
       <!-- Info -->
       <div class="bg-stone-dark rounded-md p-4 mt-5 text-sm text-text-muted text-center">
-        📱 Tieni il telefono in orizzontale per un'esperienza migliore.<br>
-        Inquadra il pannello AR nella sala per far apparire i contenuti.
+        📱 Tieni il telefono in verticale e cerca il pannello AR nella sala.<br>
+        Inquadralo con la fotocamera per far apparire i contenuti.
       </div>
     }
   `,

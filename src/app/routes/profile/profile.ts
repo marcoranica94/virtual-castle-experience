@@ -106,9 +106,15 @@ export class ProfileComponent {
 
   readonly availableRooms = ROOMS.filter(r => r.available);
 
-  readonly allBadges: BadgeDefinition[] = [
-    { id: 'custode-sala-rossa', name: 'Custode della Sala Rossa', icon: '🔴', description: 'Completa tutte e 3 le esperienze nella Sala Rossa' },
-  ];
+  /** Badge possibili — uno per ogni sala disponibile + futuri speciali */
+  readonly allBadges: BadgeDefinition[] = ROOMS
+    .filter(r => r.available)
+    .map(r => ({
+      id: `custode-${r.id}`,
+      name: `Custode della ${r.name}`,
+      icon: r.icon,
+      description: `Completa tutte e 3 le esperienze nella ${r.name}`,
+    }));
 
   isExpDone(roomId: string, exp: string): boolean {
     const p = this.progress.getRoomProgress(roomId);

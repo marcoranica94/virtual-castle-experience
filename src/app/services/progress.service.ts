@@ -9,12 +9,22 @@ const DEFAULT_PROGRESS: VisitorProgress = {
   rooms: {},
 };
 
+/** Badge appena guadagnato — emesso per un breve toast in UI */
+export interface BadgeToast {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProgressService {
   private readonly state = signal<VisitorProgress>(this.load());
 
   readonly points = computed(() => this.state().points);
   readonly badges = computed(() => this.state().badges);
+
+  /** Ultimo badge guadagnato — i componenti possono leggerlo e azzerarlo dopo il toast */
+  readonly newBadge = signal<BadgeToast | null>(null);
 
   /** Carica lo stato dal localStorage */
   private load(): VisitorProgress {
@@ -60,13 +70,16 @@ export class ProgressService {
         const badgeId = `custode-${roomId}`;
         if (!s.badges.some(b => b.id === badgeId)) {
           const roomName = roomId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          s.badges.push({
+          const badge: Badge = {
             id: badgeId,
             name: `Custode della ${roomName}`,
             icon: '🏰',
             description: `Hai completato tutte le esperienze della ${roomName}`,
             earnedAt: new Date().toISOString(),
-          });
+          };
+          s.badges.push(badge);
+          // Notifica toast — azzerato dal componente dopo la visualizzazione
+          this.newBadge.set({ id: badge.id, name: badge.name, icon: badge.icon });
         }
       }
     });

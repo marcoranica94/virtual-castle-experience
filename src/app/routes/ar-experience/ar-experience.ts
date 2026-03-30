@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, effect, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar';
@@ -6,6 +6,7 @@ import { SubtitleOverlayComponent } from '../../components/subtitle-overlay/subt
 import { QuizComponent } from '../../components/quiz/quiz';
 import { InfoPanelComponent } from '../../components/info-panel/info-panel';
 import { ProgressService } from '../../services/progress.service';
+import type { BadgeToast } from '../../services/progress.service';
 import { ArService } from '../../services/ar.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { getExperience, getRoomById } from '../../data/rooms';
@@ -229,6 +230,20 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
       />
     }
 
+    <!-- G-06: Toast "Badge guadagnato!" -->
+    @if (badgeToast()) {
+      <div class="fixed top-[4.5rem] left-4 right-4 z-[1005] animate-[fadeIn_0.3s_ease] pointer-events-none">
+        <div class="bg-bg-card border border-gold-dark rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg">
+          <span class="text-3xl shrink-0">{{ badgeToast()!.icon }}</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-[0.65rem] text-gold uppercase tracking-widest font-semibold">Badge sbloccato!</div>
+            <div class="font-[family-name:var(--font-family-title)] text-parchment text-sm truncate">{{ badgeToast()!.name }}</div>
+          </div>
+          <span class="text-gold text-lg shrink-0">🏆</span>
+        </div>
+      </div>
+    }
+
     <!-- D-13: Modale "Non funziona?" -->
     @if (showHelp()) {
       <div class="fixed inset-0 bg-black/80 z-[1003] flex items-end justify-center p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]" (click)="showHelp.set(false)">
@@ -282,6 +297,7 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
   readonly showHelp = signal(false);
   readonly showReturnGreeting = signal(false);
   readonly isLandscape = signal(false);
+  readonly badgeToast = signal<BadgeToast | null>(null);
 
   readonly helpTips = [
     { icon: '💡', text: 'Assicurati di essere in un luogo ben illuminato.' },
@@ -300,6 +316,17 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
 
   private static readonly TUTORIAL_KEY = 'arTutorialSeen';
   private static readonly DRAGO_VISITED_KEY = 'dragoVisited';
+
+  constructor() {
+    // G-06: mostra toast quando ProgressService segnala un nuovo badge
+    effect(() => {
+      const badge = this.progress.newBadge();
+      if (!badge) return;
+      this.badgeToast.set(badge);
+      this.progress.newBadge.set(null);
+      setTimeout(() => this.badgeToast.set(null), 4000);
+    });
+  }
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
