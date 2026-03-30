@@ -136,9 +136,9 @@ npm start              # ng serve → http://localhost:4200
 # Build produzione
 npm run build          # output in dist/castello-ar/browser/
 
-# Deploy su GitHub Pages
-npm run deploy         # build + push gh-pages
-# → https://marcoranica94.github.io/virtual-castle-experience/
+# Deploy su GitHub Pages — automatico via GitHub Actions
+git push origin master # → GitHub Actions fa build + deploy automaticamente
+# URL: https://marcoranica94.github.io/virtual-castle-experience/
 ```
 
 Il piano completo del progetto è in `Piano_Completo_AR_Castello_v2.md`.

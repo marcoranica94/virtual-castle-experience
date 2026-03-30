@@ -19,7 +19,7 @@ Ultimo aggiornamento: [DATA CREAZIONE]
 ### [DATA] — Hosting su GitHub Pages con angular-cli-ghpages
 **Decisione:** GitHub Pages come hosting, con `angular-cli-ghpages` per automatizzare build + deploy.
 **Motivazione:** Gratuito, HTTPS incluso, `npm run deploy` fa tutto. Angular non può usare GitHub Pages "nativo" (nessun build step), ma `angular-cli-ghpages` risolve: fa il build e pusha il risultato sul branch `gh-pages`.
-**Dettagli tecnici:** `baseHref: /[REPO-NAME]/` in `angular.json`, routing con `withHashLocation()` per SPA su GitHub Pages.
+**Dettagli tecnici:** `baseHref: /[REPO-NAME]/` in `angular.json`, routing con `withHashLocation()` per SPA su GitHub Pages. Deploy automatico via GitHub Actions (`.github/workflows/deploy.yml`) — nessuna dipendenza locale per il deploy.
 
 ### [DATA] — Nessun database per la demo
 **Decisione:** localStorage del browser per punti/badge. Nessun Firebase o backend.

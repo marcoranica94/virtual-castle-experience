@@ -114,11 +114,9 @@ npx localtunnel --port 4200
 # Salva le modifiche
 git add .
 git commit -m "feat(sala-rossa): descrizione della modifica"
-git push origin main
-
-# Deploy su GitHub Pages
-npm run deploy
-# → build + push su branch gh-pages → sito live in 1-2 min
+git push origin master
+# → GitHub Actions fa build + deploy automaticamente
+# → sito live in 1-2 min su GitHub Pages
 
 # Per verificare: github.com/[USER]/[REPO] → Actions → vedi se è verde ✅
 ```

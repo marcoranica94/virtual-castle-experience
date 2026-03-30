@@ -28,18 +28,23 @@ npm run build
 
 ## Deploy su GitHub Pages
 
-Il progetto usa `angular-cli-ghpages` — un comando solo:
+Il deploy è **automatico via GitHub Actions** — basta fare `git push`:
 
 ```bash
-npm run deploy
-# Esegue: build produzione + push automatico sul branch gh-pages
+git push origin master
+# → GitHub Actions fa build + deploy automaticamente
 # URL live: https://marcoranica94.github.io/virtual-castle-experience/
 ```
 
+Il workflow è in `.github/workflows/deploy.yml`. Si attiva ad ogni push su `master`.
+
 ### Setup iniziale GitHub Pages (da fare UNA VOLTA)
-- [ ] Vai su github.com/marcoranica94/virtual-castle-experience → Settings → Pages
-- [ ] Source: "Deploy from a branch" → Branch: `gh-pages` → Folder: `/ (root)` → Save
-- [ ] Esegui `npm run deploy` → dopo 1-2 min il sito è live
+- [ ] Vai su github.com/marcoranica94/virtual-castle-experience → **Settings → Pages**
+- [ ] Source: **"GitHub Actions"** (NON "Deploy from a branch")
+- [ ] Fai un `git push` → il workflow parte automaticamente
+- [ ] Dopo 1-2 min: https://marcoranica94.github.io/virtual-castle-experience/
+
+Per monitorare il build: github.com/marcoranica94/virtual-castle-experience → **Actions**
 
 ### Dominio personalizzato (opzionale, futuro)
 Vedi sezione in `castello-ar-skill/CASTELLO-AR-REFERENCE.md`.

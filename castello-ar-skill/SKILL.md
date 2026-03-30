@@ -204,12 +204,12 @@ fix(caccia-tesoro): correct model position on iOS Safari
 chore(deps): update MindAR to 1.2.5
 ```
 
-**2. Push e deploy:**
+**2. Push (= deploy automatico):**
 ```bash
-git push origin main             # salva il codice sorgente
-
-npm run deploy                   # build + push su gh-pages → GitHub Pages si aggiorna
+git push origin master
+# GitHub Actions fa build + deploy su GitHub Pages automaticamente
 # URL: https://marcoranica94.github.io/virtual-castle-experience/
+# Monitora: github.com/marcoranica94/virtual-castle-experience → Actions
 ```
 
 **3. Aggiorna documentazione** (OBBLIGATORIO):

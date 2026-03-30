@@ -9,7 +9,7 @@ Ultimo aggiornamento: 2026-03-30
 - **Stack scelto:** Angular 21 + TypeScript strict + Tailwind CSS 4
 - **Perché Angular:** TypeScript nativo, tutto incluso (routing, DI, forms), architettura scalabile, SSR-ready
 - **Perché Tailwind:** design system con @theme tokens, purge automatico, zero CSS custom
-- **Hosting:** GitHub Pages via `angular-cli-ghpages` — `npm run deploy` → branch `gh-pages`
+- **Hosting:** GitHub Pages via GitHub Actions — `git push` → build + deploy automatico
 - **Routing:** `withHashLocation()` (necessario per SPA su GitHub Pages — URL tipo `/#/sala/rossa`)
 - **baseHref:** `/virtual-castle-experience/` impostato in `angular.json` (configurazione production)
 - **Vecchio stack HTML/JS vanilla rimosso completamente**
@@ -45,6 +45,7 @@ Ultimo aggiornamento: 2026-03-30
 | TS strict non accetta `window as Record` | Cast via `unknown` intermedio |
 | SPA routing non funziona su GitHub Pages | `withHashLocation()` in `app.config.ts` — URL con `#` |
 | Build Angular con GitHub Pages sbagliato il baseHref | `"baseHref": "/virtual-castle-experience/"` in `angular.json` production |
+| Deploy richiede build manuale | GitHub Actions in `.github/workflows/deploy.yml` — build + deploy automatico su push |
 
 ## Cosa Funziona
 - Build Angular compilato con successo (63 kB iniziali)

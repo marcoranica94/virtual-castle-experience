@@ -15,7 +15,7 @@ Ultimo aggiornamento: 2026-03-30
 - [x] Documentazione aggiornata (CLAUDE.md, CLAUDE-DOC.md, ISTRUZIONI-DEV.md) (2026-03-30)
 
 ### Da Fare 📋 (utente)
-- [ ] Configurare GitHub Pages: Settings → Pages → branch `gh-pages` → poi `npm run deploy`
+- [ ] Configurare GitHub Pages: Settings → Pages → Source: **"GitHub Actions"** → poi `git push`
 - [ ] Creare/reperire 2 modelli 3D (castellano.glb, drago.glb)
 - [ ] Creare/reperire 2 file audio narrazione (.mp3)
 - [ ] Creare 3 immagini target e compilare i file .mind

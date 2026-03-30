@@ -37,27 +37,22 @@ npm run build            # output in dist/castello-ar/browser/
 
 ### Deploy su GitHub Pages
 
-Il progetto usa `angular-cli-ghpages` per il deploy automatico.
+Il deploy è **automatico via GitHub Actions** — basta fare `git push origin master`.
 
-```bash
-npm run deploy
-# Equivale a: ng deploy
-# 1. Esegue ng build --configuration production (con baseHref automatico)
-# 2. Pusha dist/castello-ar/browser/ sul branch gh-pages
-# 3. GitHub Pages serve il sito su:
-#    https://marcoranica94.github.io/virtual-castle-experience/
-```
+Il workflow `.github/workflows/deploy.yml`:
+1. Si attiva ad ogni push su `master`
+2. Esegue `npm ci` + `npm run build`
+3. Pubblica `dist/castello-ar/browser/` su GitHub Pages
 
 **Setup iniziale GitHub Pages (una volta):**
 1. Vai su github.com/marcoranica94/virtual-castle-experience → Settings → Pages
-2. Source: "Deploy from a branch"
-3. Branch: `gh-pages` → `/ (root)` → Save
-4. Dopo il primo `npm run deploy` il sito sarà live
+2. Source: **"GitHub Actions"** (NON "Deploy from a branch")
+3. Fai un `git push` → il workflow parte e il sito è live in 1-2 min
+4. URL: https://marcoranica94.github.io/virtual-castle-experience/
 
 **Note tecniche:**
 - `baseHref` impostato a `/virtual-castle-experience/` in `angular.json` (configurazione production)
 - Routing con `withHashLocation()` — URL tipo `.../#/sala/rossa` (necessario per GitHub Pages)
-- Il branch `gh-pages` viene gestito interamente da `angular-cli-ghpages`, non modificarlo manualmente
 
 ### Dominio personalizzato (opzionale)
 1. Nelle impostazioni GitHub Pages → Custom domain → inserisci: `ar.rocca-albani.it`
