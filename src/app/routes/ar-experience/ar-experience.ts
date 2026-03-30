@@ -124,6 +124,36 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
       </div>
     }
 
+    <!-- Asset mancanti — offri modalità demo -->
+    @if (assetsMissing()) {
+      <div class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1001] px-6 text-center">
+        <div class="text-5xl mb-4">🚧</div>
+        <h2 class="font-[family-name:var(--font-family-title)] text-gold text-xl mb-2">
+          Asset AR non disponibili
+        </h2>
+        <p class="text-text-muted text-sm max-w-xs mb-2">
+          I file necessari per la Realtà Aumentata (immagine target, modello 3D)
+          non sono ancora stati caricati nel progetto.
+        </p>
+        <p class="text-text-muted text-xs max-w-xs mb-6">
+          Puoi provare l'interfaccia in modalità demo — tutte le funzioni
+          (audio, sottotitoli, quiz) funzionano senza fotocamera.
+        </p>
+        <button
+          class="w-full max-w-xs min-h-12 px-6 py-3 bg-gold text-stone-dark font-semibold rounded-xl text-lg active:scale-[0.97] transition-transform mb-3"
+          (click)="startDemo()"
+        >
+          {{ experience?.icon }} Prova in modalità demo
+        </button>
+        <button
+          class="text-sm text-text-muted bg-transparent border-none cursor-pointer"
+          (click)="goBack()"
+        >
+          ← Torna al menù
+        </button>
+      </div>
+    }
+
     <!-- Fallback -->
     @if (fallbackMessage()) {
       <div class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1001] px-6 text-center">
@@ -327,6 +357,8 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
   readonly showReturnGreeting = signal(false);
   readonly isLandscape = signal(false);
   readonly badgeToast = signal<BadgeToast | null>(null);
+  readonly demoMode = signal(false);
+  readonly assetsMissing = signal(false);
 
   readonly helpTips = [
     { icon: '💡', text: 'Assicurati di essere in un luogo ben illuminato.' },
@@ -421,19 +453,47 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
 
     this.loading.set(true);
 
-    // Simula progresso loading
-    this.progressInterval = setInterval(() => {
-      const current = this.loadingProgress();
-      if (current < 90) this.loadingProgress.set(current + Math.random() * 15);
-    }, 300);
+    // Verifica che il file .mind esista prima di caricare l'AR
+    this.checkAssetExists(this.experience!.assets.targetMind).then(exists => {
+      if (!exists) {
+        this.loading.set(false);
+        this.assetsMissing.set(true);
+        return;
+      }
 
-    // Carica librerie AR e crea scena
-    this.arService.loadArLibraries().then(() => {
-      this.createArScene();
-    }).catch(() => {
-      this.loading.set(false);
-      this.fallbackMessage.set('Errore nel caricamento delle librerie AR.');
+      // Simula progresso loading
+      this.progressInterval = setInterval(() => {
+        const current = this.loadingProgress();
+        if (current < 90) this.loadingProgress.set(current + Math.random() * 15);
+      }, 300);
+
+      // Carica librerie AR e crea scena
+      this.arService.loadArLibraries().then(() => {
+        this.createArScene();
+      }).catch(() => {
+        this.loading.set(false);
+        this.fallbackMessage.set('Errore nel caricamento delle librerie AR.');
+      });
     });
+  }
+
+  /** Verifica esistenza asset con HEAD request */
+  private async checkAssetExists(url: string): Promise<boolean> {
+    try {
+      const resp = await fetch(url, { method: 'HEAD' });
+      return resp.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  /** Avvia modalità demo (senza AR, mostra UI interattiva) */
+  startDemo(): void {
+    this.assetsMissing.set(false);
+    this.demoMode.set(true);
+    this.sceneReady.set(true);
+    this.targetFound.set(true);
+    this.analytics.track('ar', 'demo_mode', `${this.roomId}/${this.experience!.type}`);
   }
 
   ngOnDestroy(): void {
