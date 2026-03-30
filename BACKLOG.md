@@ -14,12 +14,21 @@ Ultimo aggiornamento: 2026-03-30
 - [x] Build produzione riuscito — 63 kB bundle iniziale (2026-03-30)
 - [x] Documentazione aggiornata (CLAUDE.md, CLAUDE-DOC.md, ISTRUZIONI-DEV.md) (2026-03-30)
 
+### Completate ✅ (2026-03-30 — sprint 1)
+- [x] D-03: Mini-tutorial pre-AR (prima visita, localStorage)
+- [x] D-13: Modale "Non funziona?" con troubleshooting
+- [x] C-01/C-02: Copioni storici realistici Rocca Albani in sala-rossa.ts
+- [x] C-07: Quiz sulla storia della Rocca (anno di fondazione 1354)
+- [x] G-05: Pagina attestato stampabile (`/attestato`, @media print)
+- [x] PWA manifest (manifest.webmanifest, theme-color, installabile)
+- [x] Scan hint automatico dopo 15 sec se target non trovato
+- [x] Aggiornato Piano_Completo_AR_Castello_v2.md con nuovo stack
+
 ### Da Fare 📋 (utente)
 - [ ] Configurare GitHub Pages: Settings → Pages → Source: **"GitHub Actions"** → poi `git push`
 - [ ] Creare/reperire 2 modelli 3D (castellano.glb, drago.glb)
 - [ ] Creare/reperire 2 file audio narrazione (.mp3)
 - [ ] Creare 3 immagini target e compilare i file .mind
-- [ ] Scrivere contenuti storici reali sulla Rocca Albani di Urgnano
 - [ ] Primo test su smartphone reale via HTTPS
 
 ---

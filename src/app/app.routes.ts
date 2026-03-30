@@ -22,6 +22,10 @@ export const routes: Routes = [
     loadComponent: () => import('./routes/profile/profile').then(m => m.ProfileComponent),
   },
   {
+    path: 'attestato',
+    loadComponent: () => import('./routes/attestato/attestato').then(m => m.AttestatiComponent),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

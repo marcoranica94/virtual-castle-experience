@@ -49,10 +49,15 @@ Ultimo aggiornamento: 2026-03-30
 
 ## Cosa Funziona
 - Build Angular compilato con successo (63 kB iniziali)
-- Routing lazy-loaded: Home → Sala → Esperienza AR → Tutorial → Profilo
+- Routing lazy-loaded: Home → Sala → Esperienza AR → Tutorial → Profilo → Attestato
 - Servizi: ProgressService (badge/punti), ArService (compatibilità + load librerie), AnalyticsService
 - Componenti UI: Card, ProgressBar, SubtitleOverlay, Quiz, InfoPanel
-- Dati Sala Rossa tipizzati e separati dal codice
+- Dati Sala Rossa con copioni storici realistici (Rocca Albani), quiz, timeline accurata
+- D-03: Mini-tutorial pre-AR (localStorage `arTutorialSeen` — mostrato solo prima volta)
+- D-13: Modale "Non funziona?" con 5 tip di troubleshooting
+- Scan hint automatico dopo 15 sec se target non trovato
+- PWA manifest (`manifest.webmanifest`) — installabile da smartphone
+- Pagina attestato stampabile (`/attestato`) — ottimizzata `@media print`
 
 ## Cosa Non Funziona / Limitazioni
 - **Asset mancanti:** servono modelli 3D (.glb), audio (.mp3), immagini target e file .mind

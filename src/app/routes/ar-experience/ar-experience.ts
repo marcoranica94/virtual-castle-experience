@@ -16,6 +16,53 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
   standalone: true,
   imports: [ProgressBarComponent, SubtitleOverlayComponent, QuizComponent, InfoPanelComponent],
   template: `
+    <!-- D-03: Mini-tutorial pre-AR (solo prima visita) -->
+    @if (showArTutorial()) {
+      <div class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1002] px-6 text-center animate-[fadeIn_0.3s_ease]">
+        <h2 class="font-[family-name:var(--font-family-title)] text-gold text-xl mb-2">
+          {{ experience?.icon }} {{ experience?.title }}
+        </h2>
+        <p class="text-text-muted text-sm mb-8">Come funziona l'esperienza AR</p>
+
+        <div class="w-full max-w-xs space-y-4 mb-8">
+          <div class="flex items-center gap-4 bg-bg-card rounded-xl p-4 border border-stone text-left">
+            <span class="text-3xl shrink-0">📷</span>
+            <div>
+              <div class="text-parchment text-sm font-semibold mb-0.5">Concedi la fotocamera</div>
+              <div class="text-text-muted text-xs">Il telefono chiederà il permesso — tocca "Consenti".</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 bg-bg-card rounded-xl p-4 border border-stone text-left">
+            <span class="text-3xl shrink-0">🎯</span>
+            <div>
+              <div class="text-parchment text-sm font-semibold mb-0.5">Inquadra il pannello</div>
+              <div class="text-text-muted text-xs">Cerca il pannello AR nella sala e puntaci sopra la fotocamera.</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 bg-bg-card rounded-xl p-4 border border-stone text-left">
+            <span class="text-3xl shrink-0">✨</span>
+            <div>
+              <div class="text-parchment text-sm font-semibold mb-0.5">Magia!</div>
+              <div class="text-text-muted text-xs">Il contenuto AR appare. Tienilo stabile e goditi l'esperienza!</div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="w-full max-w-xs min-h-12 px-6 py-3 bg-gold text-stone-dark font-semibold rounded-xl text-lg active:scale-[0.97] transition-transform"
+          (click)="dismissArTutorial()"
+        >
+          Ho capito, inizia!
+        </button>
+        <button
+          class="mt-4 text-sm text-text-muted bg-transparent border-none cursor-pointer"
+          (click)="goBack()"
+        >
+          ← Torna al menù
+        </button>
+      </div>
+    }
+
     <!-- Loading screen -->
     @if (loading()) {
       <div class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1000] px-6 text-center">
@@ -23,10 +70,10 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
           {{ experience?.icon }} {{ experience?.title }}
         </h2>
         <p class="text-sm text-text-muted max-w-xs">
-          Preparazione dell'esperienza in corso...<br>
-          Tra poco potrai inquadrare il pannello AR nella sala.
+          Preparazione in corso...<br>
+          Tra poco potrai inquadrare il pannello AR.
         </p>
-        <div class="mt-5">
+        <div class="mt-5 w-full max-w-xs">
           <app-progress-bar [value]="loadingProgress()" />
         </div>
         <p class="text-xs text-text-muted mt-3">
@@ -60,11 +107,19 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
           aria-label="Torna al menù"
         >&times;</button>
 
-        @if (experience?.type === 'drago') {
-          <div class="pointer-events-auto inline-flex items-center gap-1 bg-stone border border-gold-dark rounded-full px-2 py-1 text-xs text-gold-light">
-            ⭐ {{ progress.points() }} punti
-          </div>
-        }
+        <div class="flex gap-2 pointer-events-auto">
+          @if (experience?.type === 'drago') {
+            <div class="inline-flex items-center gap-1 bg-stone border border-gold-dark rounded-full px-2 py-1 text-xs text-gold-light">
+              ⭐ {{ progress.points() }} punti
+            </div>
+          }
+          <!-- D-13: Pulsante "Non funziona?" -->
+          <button
+            class="bg-black/60 rounded-full w-11 h-11 flex items-center justify-center text-white text-sm border-none cursor-pointer font-bold"
+            (click)="showHelp.set(true)"
+            aria-label="Aiuto"
+          >?</button>
+        </div>
       </div>
     }
 
@@ -117,6 +172,15 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
       </div>
     }
 
+    <!-- Barra aiuto se target non trovato (dopo 15 sec) -->
+    @if (sceneReady() && !targetFound() && showScanHint()) {
+      <div class="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <div class="bg-black/70 rounded-xl p-3 text-center text-sm text-parchment">
+          🔍 Cerca il pannello AR nella sala e inquadralo con la fotocamera
+        </div>
+      </div>
+    }
+
     <!-- Quiz (bambini) -->
     @if (experience?.quiz) {
       <app-quiz
@@ -136,6 +200,29 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
         (close)="infoPanelVisible.set(false)"
       />
     }
+
+    <!-- D-13: Modale "Non funziona?" -->
+    @if (showHelp()) {
+      <div class="fixed inset-0 bg-black/80 z-[1003] flex items-end justify-center p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]" (click)="showHelp.set(false)">
+        <div class="bg-bg-card border border-stone rounded-2xl w-full max-w-sm p-5" (click)="$event.stopPropagation()">
+          <h3 class="font-[family-name:var(--font-family-title)] text-gold text-lg mb-4">❓ Non funziona?</h3>
+          <ul class="space-y-3 mb-5">
+            @for (tip of helpTips; track tip.icon) {
+              <li class="flex gap-3 text-sm text-text-muted">
+                <span class="text-lg shrink-0">{{ tip.icon }}</span>
+                <span>{{ tip.text }}</span>
+              </li>
+            }
+          </ul>
+          <button
+            class="w-full min-h-11 py-3 bg-stone text-parchment font-semibold rounded-xl"
+            (click)="showHelp.set(false)"
+          >
+            Chiudi
+          </button>
+        </div>
+      </div>
+    }
   `,
 })
 export class ArExperienceComponent implements OnInit, OnDestroy {
@@ -150,11 +237,13 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
   private roomId = '';
 
   // Stato UI con signals
-  readonly loading = signal(true);
+  readonly showArTutorial = signal(false);
+  readonly loading = signal(false);
   readonly loadingProgress = signal(0);
   readonly fallbackMessage = signal('');
   readonly sceneReady = signal(false);
   readonly targetFound = signal(false);
+  readonly showScanHint = signal(false);
   readonly currentSubtitle = signal('');
   readonly audioPlaying = signal(false);
   readonly audioEnded = signal(false);
@@ -162,11 +251,23 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
   readonly quizDone = signal(false);
   readonly infoPanelVisible = signal(false);
   readonly infoPanelMode = signal<'info' | 'timeline'>('info');
+  readonly showHelp = signal(false);
+
+  readonly helpTips = [
+    { icon: '💡', text: 'Assicurati di essere in un luogo ben illuminato.' },
+    { icon: '📷', text: 'Controlla che il permesso fotocamera sia abilitato (Impostazioni → Browser → Fotocamera).' },
+    { icon: '🎯', text: 'Inquadra il pannello AR frontalmente, a 30–50 cm di distanza, tenendo il telefono fermo.' },
+    { icon: '🔄', text: 'Se il modello non appare, prova ad allontanarti un poco e poi riquadrare.' },
+    { icon: '🌐', text: 'Verifica la connessione: le prime librerie AR vengono scaricate online.' },
+  ];
 
   private audio: HTMLAudioElement | null = null;
   private subtitleInterval: ReturnType<typeof setInterval> | null = null;
   private progressInterval: ReturnType<typeof setInterval> | null = null;
+  private scanHintTimeout: ReturnType<typeof setTimeout> | null = null;
   private labPanelOpened = false;
+
+  private static readonly TUTORIAL_KEY = 'arTutorialSeen';
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -177,13 +278,32 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
     this.experience = getExperience(this.roomId, expType);
     if (!this.experience) { this.router.navigate(['/']); return; }
 
+    // D-03: mostra tutorial solo alla prima visita
+    const tutorialSeen = localStorage.getItem(ArExperienceComponent.TUTORIAL_KEY);
+    if (!tutorialSeen) {
+      this.showArTutorial.set(true);
+      return; // la vera init parte al click "Ho capito"
+    }
+
+    this.startArInit();
+  }
+
+  /** D-03: chiamato al click "Ho capito, inizia!" */
+  dismissArTutorial(): void {
+    localStorage.setItem(ArExperienceComponent.TUTORIAL_KEY, '1');
+    this.showArTutorial.set(false);
+    this.startArInit();
+  }
+
+  private startArInit(): void {
     // Controlla compatibilità
     const compat = this.arService.checkCompatibility();
     if (!compat.supported) {
-      this.loading.set(false);
       this.fallbackMessage.set(compat.reason!);
       return;
     }
+
+    this.loading.set(true);
 
     // Simula progresso loading
     this.progressInterval = setInterval(() => {
@@ -204,6 +324,7 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
     this.stopAudio();
     if (this.progressInterval) clearInterval(this.progressInterval);
     if (this.subtitleInterval) clearInterval(this.subtitleInterval);
+    if (this.scanHintTimeout) clearTimeout(this.scanHintTimeout);
     // Rimuovi scena AR dal DOM
     const container = document.getElementById('ar-container');
     if (container) container.innerHTML = '';
@@ -263,6 +384,10 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
         this.loading.set(false);
         this.sceneReady.set(true);
         this.analytics.track('ar', 'scene_ready', `${this.roomId}/${this.experience!.type}`);
+        // Mostra hint di scansione dopo 15 secondi se il target non è ancora trovato
+        this.scanHintTimeout = setTimeout(() => {
+          if (!this.targetFound()) this.showScanHint.set(true);
+        }, 15000);
       }, 400);
     });
 
@@ -274,6 +399,7 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
 
     target.addEventListener('targetFound', () => {
       this.targetFound.set(true);
+      this.showScanHint.set(false);
       this.analytics.track('ar', 'target_found', `${this.roomId}/${this.experience!.type}`);
     });
 

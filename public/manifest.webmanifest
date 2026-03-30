@@ -1,0 +1,19 @@
+{
+  "name": "Rocca Albani AR — Urgnano",
+  "short_name": "Rocca AR",
+  "description": "Esperienza di Realtà Aumentata per la visita alla Rocca Albani di Urgnano",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1a1410",
+  "theme_color": "#c9a84c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["education", "entertainment"],
+  "lang": "it"
+}

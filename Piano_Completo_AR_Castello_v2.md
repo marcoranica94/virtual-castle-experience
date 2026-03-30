@@ -35,9 +35,9 @@
 
 Il visitatore arriva al castello, scansiona un QR code con il telefono, e senza installare nulla si ritrova immerso in un'esperienza di Realtà Aumentata. Inquadrando elementi della sala con la fotocamera, appaiono personaggi 3D animati, narrazioni audio, giochi interattivi e contenuti didattici.
 
-**Tecnologia:** WebApp AR (browser-based) — zero installazione, zero store, zero complicazioni.  
-**Stack:** MindAR.js + A-Frame + HTML/JS vanilla.  
-**Hosting:** GitHub Pages (gratuito, HTTPS incluso, deploy con git push). Nessun database — localStorage per punti/badge.  
+**Tecnologia:** WebApp AR (browser-based) — zero installazione, zero store, zero complicazioni.
+**Stack:** Angular 21 + TypeScript strict + Tailwind CSS 4 + MindAR 1.2.5 + A-Frame 1.7.1.
+**Hosting:** GitHub Pages via GitHub Actions (deploy automatico su `git push master`). Nessun database — localStorage per punti/badge.  
 
 Il progetto parte dalla **Sala Rossa** come prototipo, con struttura replicabile per tutte le sale e il giardino.
 
@@ -78,39 +78,41 @@ Non sono "modalità" — sono **porte d'ingresso in mondi narrativi diversi**.
 
 ### 3.1 Struttura File
 
+> ⚠️ **Stack aggiornato:** Il progetto usa Angular 21 + TypeScript — struttura aggiornata rispetto alla versione originale.
+
 ```
-castello-ar/
-├── index.html                        ← Homepage generale (elenco sale)
-├── sala-rossa/
-│   ├── index.html                    ← Menù narrativo (3 esperienze)
-│   ├── il-castellano.html            ← "Il Castellano Ti Racconta"
-│   ├── drago-custode.html            ← "La Missione del Drago Custode"
-│   ├── laboratorio-tempo.html        ← "Il Laboratorio del Tempo"
-│   └── assets/
-│       ├── models/                   ← File .glb (avatar, oggetti 3D)
-│       ├── audio/                    ← File .mp3 (narrazioni)
+virtual-castle-experience/
+├── angular.json                      ← Config Angular CLI (baseHref GitHub Pages)
+├── package.json                      ← Dipendenze (Angular, Tailwind, ecc.)
+├── .github/workflows/deploy.yml      ← GitHub Actions: build + deploy automatico
+├── public/assets/                    ← Asset statici (copiati nel build as-is)
+│   └── sala-rossa/
+│       ├── models/                   ← File .glb (castellano.glb, drago.glb)
+│       ├── audio/                    ← File .mp3 (narrazione)
 │       ├── images/                   ← Immagini target originali
 │       └── targets/                  ← File .mind compilati
-├── sala-blu/                         ← Stessa struttura (prossima sala)
-├── giardino/                         ← Location-based con AR.js + GPS
-├── shared/
-│   ├── css/
-│   │   └── theme.css                ← Variabili CSS, colori castello
-│   ├── js/
-│   │   ├── ar-utils.js              ← Funzioni AR condivise
-│   │   ├── audio-player.js          ← Player audio con sottotitoli
-│   │   ├── badge-system.js          ← Sistema punti e badge
-│   │   └── analytics.js             ← Tracciamento eventi
-│   └── models/                      ← Avatar riusabili tra sale
-├── tutorial/
-│   └── tutorial.html                ← Mini-tutorial animato pre-AR
-├── profilo/
-│   └── index.html                   ← "Il mio zaino" — badge, punti
+├── src/
+│   ├── styles.css                    ← Tailwind 4 + design tokens castello (@theme)
+│   └── app/
+│       ├── app.config.ts             ← providers: router (withHashLocation)
+│       ├── app.routes.ts             ← Routing lazy: / /sala/:id /sala/:id/:exp /tutorial /profilo
+│       ├── types/index.ts            ← Interfacce TypeScript (RoomConfig, ExperienceConfig, …)
+│       ├── services/
+│       │   ├── progress.service.ts   ← Punti, badge, localStorage
+│       │   ├── ar.service.ts         ← Carica MindAR/A-Frame dinamicamente
+│       │   └── analytics.service.ts  ← Tracciamento eventi
+│       ├── data/
+│       │   ├── rooms.ts              ← Registry sale (aggiungere una sala = aggiungere qui)
+│       │   └── sala-rossa.ts         ← Dati Sala Rossa tipizzati (avatar, audio, quiz, timeline)
+│       ├── components/               ← ProgressBar, SubtitleOverlay, Quiz, InfoPanel, Card
+│       └── routes/                   ← Home, RoomMenu, ArExperience, Tutorial, Profile
 ├── CLAUDE-DOC.md
 ├── ISTRUZIONI-DEV.md
 ├── BACKLOG.md
-└── package.json
+└── Piano_Completo_AR_Castello_v2.md
 ```
+
+**Regola chiave:** Aggiungere una nuova sala = solo un file `src/app/data/sala-nome.ts` + asset in `public/assets/sala-nome/`. Zero HTML/route nuovi — `ArExperienceComponent` è generico.
 
 ### 3.2 Flusso Utente Aggiornato
 
@@ -397,16 +399,16 @@ Framework vendibile ad altri castelli, musei, borghi, scuole. Quello che si sta 
 
 | ID | Task | Descrizione | Chi | Effort | Priorità |
 |---|---|---|---|---|---|
-| S-01 | Installare Node.js LTS | Scaricare da nodejs.org — verificare ultima LTS | Utente | 15 min | 🔴 Alta |
-| S-02 | Attivare Claude Pro | Sottoscrivere $20/mese per Claude Code | Utente | 10 min | 🔴 Alta |
-| S-03 | Installare Claude Code | `npm install -g @anthropic-ai/claude-code` | Utente | 5 min | 🔴 Alta |
-| S-04 | Creare struttura cartelle | Struttura come da sezione 3.1. ATTENZIONE: tutti i path devono essere relativi (GitHub Pages serve da sottocartella) | Claude Code | 10 min | 🔴 Alta |
-| S-05 | Inizializzare Git + GitHub | `git init`, primo commit, creare repo su GitHub (Public), push, attivare GitHub Pages in Settings → Pages → main / root | Utente + Claude Code | 20 min | 🔴 Alta |
-| S-06 | Verificare deploy GitHub Pages | Controllare che https://[username].github.io/castello-ar/ sia raggiungibile con HTTPS | Utente | 10 min | 🔴 Alta |
-| S-07 | Dominio personalizzato | Opzionale: es. ar.castello-xyz.it → CNAME su GitHub Pages | GitHub Settings | 30 min | 🟢 Bassa |
-| S-08 | Creare CLAUDE-DOC.md | Inizializzare con template da skill | Claude Code | 10 min | 🔴 Alta |
-| S-09 | Creare ISTRUZIONI-DEV.md | Inizializzare con template da skill | Claude Code | 10 min | 🔴 Alta |
-| S-10 | Creare BACKLOG.md | Inizializzare con tutte le task | Claude Code | 15 min | 🔴 Alta |
+| ✅ S-01 | Installare Node.js LTS | Node 24.x installato | Utente | — | 🔴 Alta |
+| ✅ S-02 | Attivare Claude Pro | Attivo | Utente | — | 🔴 Alta |
+| ✅ S-03 | Installare Claude Code | Installato | Utente | — | 🔴 Alta |
+| ✅ S-04 | Creare progetto Angular | Angular 21 + TypeScript strict + Tailwind 4. Struttura da sezione 3.1 | Claude Code | — | 🔴 Alta |
+| ✅ S-05 | Git + GitHub + GitHub Actions | Repository su GitHub, workflow deploy.yml (build + push Pages automatico su `git push master`) | Utente + Claude Code | — | 🔴 Alta |
+| ☐ S-06 | Attivare GitHub Pages | Settings → Pages → Source: "GitHub Actions" → poi `git push` | Utente | 10 min | 🔴 Alta |
+| ☐ S-07 | Dominio personalizzato | Opzionale: es. ar.rocca-albani.it → CNAME su GitHub Pages | GitHub Settings | 30 min | 🟢 Bassa |
+| ✅ S-08 | Creare CLAUDE-DOC.md | Creato e aggiornato | Claude Code | — | 🔴 Alta |
+| ✅ S-09 | Creare ISTRUZIONI-DEV.md | Creato e aggiornato | Claude Code | — | 🔴 Alta |
+| ✅ S-10 | Creare BACKLOG.md | Creato e aggiornato | Claude Code | — | 🔴 Alta |
 
 ### EPIC 2: Immagini Target e Pannelli
 
@@ -454,31 +456,31 @@ Framework vendibile ad altri castelli, musei, borghi, scuole. Quello che si sta 
 
 | ID | Task | Descrizione | Chi | Effort | Priorità |
 |---|---|---|---|---|---|
-| D-01 | Homepage generale | Elenco sale (Sala Rossa attiva, altre "Prossimamente"). Logo, colori castello | Claude Code | 1 ora | 🟡 Media |
-| D-02 | Menù narrativo Sala Rossa | 3 "porte" con nomi narrativi, illustrazioni, breve descrizione. Mobile-first | Claude Code | 2 ore | 🔴 Alta |
-| D-03 | Mini-tutorial animato | Animazione 5 sec: mano con telefono inquadra pannello. "Ho capito, inizia!" Mostrare solo prima volta | Claude Code | 1-2 ore | 🔴 Alta |
-| D-04 | Loading con progresso | Barra % caricamento asset. Istruzioni durante attesa ("Prepara il telefono...") | Claude Code | 1 ora | 🔴 Alta |
-| D-05 | Gestione permessi camera | Richiesta permesso con spiegazione chiara IT. Fallback se rifiutato | Claude Code | 1 ora | 🔴 Alta |
-| D-06 | "Il Castellano" — AR base | Target adulti → avatar appare con animazione idle | Claude Code | 2 ore | 🔴 Alta |
-| D-07 | "Il Castellano" — audio + sottotitoli | Pulsante "Ascolta" → audio + animazione talking + sottotitoli sincronizzati | Claude Code | 2-3 ore | 🔴 Alta |
-| D-08 | "Drago Custode" — AR base | Target bambini → drago appare con animazione vivace | Claude Code | 2 ore | 🔴 Alta |
-| D-09 | "Drago Custode" — indizio | Fumetto 3D con indizio + audio + pulsante "Prossima sala" | Claude Code | 2-3 ore | 🔴 Alta |
-| D-10 | "Drago Custode" — quiz | 3 risposte come pulsanti. Feedback visivo. Punti assegnati | Claude Code | 2-3 ore | 🟡 Media |
-| D-11 | "Laboratorio del Tempo" | Pannelli info 3D con frecce, etichette espandibili al tocco | Claude Code | 2-3 ore | 🟡 Media |
-| D-12 | Pulsante "Fine" | Chiude camera, salva progressi, torna al menù. SU OGNI PAGINA AR | Claude Code | 30 min | 🔴 Alta |
-| D-13 | Pulsante "Non funziona?" | Guida rapida troubleshooting sempre visibile | Claude Code | 1 ora | 🔴 Alta |
-| D-14 | Lingua automatica | Detect lingua browser → contenuti nella lingua corrispondente + selettore manuale | Claude Code | 2 ore | 🟢 Bassa |
-| D-15 | theme.css condiviso | Variabili CSS castello: colori, font, touch target 44x44px | Claude Code | 1 ora | 🔴 Alta |
+| ✅ D-01 | Homepage generale | `HomeComponent` — elenco sale, badge, navigazione | Claude Code | — | 🟡 Media |
+| ✅ D-02 | Menù narrativo Sala Rossa | `RoomMenuComponent` — 3 esperienze, colori narrativi, stato completamento | Claude Code | — | 🔴 Alta |
+| ☐ D-03 | Mini-tutorial pre-AR | Overlay "come funziona" prima di entrare in AR. Solo prima visita (localStorage). "Ho capito!" → avvia AR | Claude Code | 1-2 ore | 🔴 Alta |
+| ✅ D-04 | Loading con progresso | Barra % caricamento in `ArExperienceComponent` | Claude Code | — | 🔴 Alta |
+| ✅ D-05 | Gestione permessi camera | Fallback con messaggio chiaro in `ArExperienceComponent` | Claude Code | — | 🔴 Alta |
+| ✅ D-06 | "Il Castellano" — AR base | Avatar + idle in `ArExperienceComponent` | Claude Code | — | 🔴 Alta |
+| ✅ D-07 | "Il Castellano" — audio + sottotitoli | Pulsante Ascolta + `SubtitleOverlayComponent` sincronizzato | Claude Code | — | 🔴 Alta |
+| ✅ D-08 | "Drago Custode" — AR base | Drago + animazione in `ArExperienceComponent` | Claude Code | — | 🔴 Alta |
+| ✅ D-09 | "Drago Custode" — indizio/audio | Audio + pulsante "Ascolta" | Claude Code | — | 🔴 Alta |
+| ✅ D-10 | "Drago Custode" — quiz | `QuizComponent` con feedback visivo e punti | Claude Code | — | 🟡 Media |
+| ✅ D-11 | "Laboratorio del Tempo" | `InfoPanelComponent` — scheda + timeline, etichette 3D | Claude Code | — | 🟡 Media |
+| ✅ D-12 | Pulsante "Fine" | In `ArExperienceComponent` su ogni esperienza | Claude Code | — | 🔴 Alta |
+| ☐ D-13 | Pulsante "Non funziona?" | Modale troubleshooting sempre accessibile durante AR | Claude Code | 1 ora | 🔴 Alta |
+| ☐ D-14 | Lingua automatica | Detect lingua browser → EN fallback. Selettore manuale | Claude Code | 2 ore | 🟢 Bassa |
+| ✅ D-15 | Design system | Tailwind 4 + `@theme` tokens castello in `styles.css` | Claude Code | — | 🔴 Alta |
 
 ### EPIC 6: Gamification
 
 | ID | Task | Descrizione | Chi | Effort | Priorità |
 |---|---|---|---|---|---|
-| G-01 | Sistema punti localStorage | Salvataggio punti nel browser. Funzioni: addPoints, getPoints, getTitle | Claude Code | 2 ore | 🟡 Media |
-| G-02 | Badge per sala completata | Logica: se tutte e 3 le esperienze fatte → badge "Custode Sala Rossa" | Claude Code | 1 ora | 🟡 Media |
-| G-03 | Pagina "Il mio zaino" | Visualizzazione punti, badge, titolo corrente. Grafica per bambini | Claude Code | 2 ore | 🟡 Media |
-| G-04 | Riconoscimento Drago | Il Drago controlla localStorage: se già visitato → "Bentornato!" | Claude Code | 1 ora | 🟢 Bassa |
-| G-05 | Design attestato cartaceo | Template stampabile A4 "Cavaliere del Castello" con spazio per nome | Claude AI/Canva | 1 ora | 🟡 Media |
+| ✅ G-01 | Sistema punti localStorage | `ProgressService` — signals, addPoints, localStorage | Claude Code | — | 🟡 Media |
+| ✅ G-02 | Badge per sala completata | Logica in `ProgressService` — badge "Custode Sala Rossa" | Claude Code | — | 🟡 Media |
+| ✅ G-03 | Pagina "Il mio zaino" | `ProfileComponent` — punti, barre progresso sale, badge | Claude Code | — | 🟡 Media |
+| ☐ G-04 | Riconoscimento Drago | Drago saluta visitatori di ritorno ("Bentornato!") — localStorage | Claude Code | 1 ora | 🟢 Bassa |
+| ☐ G-05 | Pagina attestato stampabile | Route `/attestato` — pagina A4 ottimizzata per stampa "Cavaliere del Castello" | Claude Code | 1 ora | 🟡 Media |
 
 ### EPIC 7: Test e Qualità
 
@@ -512,59 +514,70 @@ Framework vendibile ad altri castelli, musei, borghi, scuole. Quello che si sta 
 
 ## 14. PIANO SPRINT AGGIORNATO
 
-### SPRINT 1 — SETUP, ASSET E VERIFICA CONNETTIVITÀ (Settimana 1)
+### ✅ SPRINT 0 — SETUP ANGULAR (COMPLETATO — 2026-03-30)
 
-**Obiettivo:** Ambiente pronto, connettività verificata, primi asset pronti.
+**Fatto:**
+- Angular 21 + TypeScript strict + Tailwind CSS 4 (S-01→S-05, S-08→S-10)
+- GitHub Actions workflow per deploy automatico (git push = deploy)
+- Tutte le route lazy-loaded: Home, RoomMenu, ArExperience, Tutorial, Profile
+- Servizi: ProgressService, ArService, AnalyticsService
+- Componenti UI: Card, ProgressBar, SubtitleOverlay, Quiz, InfoPanel
+- Dati Sala Rossa placeholder tipizzati
+- Build produzione: 63 kB bundle iniziale
 
-**Task:**
-- S-01 → S-06, S-08 → S-10 — Setup completo + GitHub Pages attivo
-- Q-04 — **Test connettività nella Sala Rossa** (PRIORITÀ ASSOLUTA)
-- T-01, T-02, T-03 — Foto mobile + test elementi decorativi come target
-- T-04, T-05, T-07, T-08 — Creazione e test target AR
-- A-01 → A-06 — Avatar scelti e convertiti in GLB
-
-**Deliverable:** Repository GitHub con Pages attivo, 2 avatar GLB funzionanti, file .mind pronti, report connettività sala. URL live: https://[username].github.io/castello-ar/
-
----
-
-### SPRINT 2 — PROTOTIPO AR FUNZIONANTE (Settimana 2-3)
-
-**Obiettivo:** Le 3 esperienze della Sala Rossa funzionano. Dimostrabile alla giunta.
-
-**Task:**
-- D-15 — Theme CSS condiviso
-- D-02 — Menù narrativo Sala Rossa
-- D-03 — Mini-tutorial animato
-- D-04, D-05 — Loading e permessi camera
-- D-06 — "Il Castellano" AR base
-- D-08 — "Drago Custode" AR base
-- D-12 — Pulsante "Fine" su ogni pagina
-- D-13 — Pulsante "Non funziona?"
-- C-01, C-02 — Copioni narrazione
-- Q-07, Q-08 — Validazione HTML e dimensioni
-
-**Deliverable:** WebApp live su GitHub Pages. QR → scelta → tutorial → fotocamera → avatar appare. Funzionante su iPhone e Android. Dimostrabile.
+**Ancora da fare (utente):** S-06 — Attivare GitHub Pages in Settings → Source: "GitHub Actions"
 
 ---
 
-### SPRINT 3 — CONTENUTI COMPLETI E POLISH (Settimana 4-5)
+### 🔄 SPRINT 1 — ASSET E CONNETTIVITÀ (In corso — utente)
 
-**Obiettivo:** Audio, sottotitoli, interazioni, quiz, didattica, gamification base.
+**Obiettivo:** Asset reali pronti per integrazione.
+
+**Task Claude Code:**
+- ☐ D-03 — Mini-tutorial pre-AR (prima visita)
+- ☐ D-13 — Pulsante "Non funziona?"
+- ☐ C-01, C-02 — Copioni narrazione Sala Rossa (testi placeholder storici realistici)
+- ☐ C-07 — Quiz reali sulla Sala Rossa
+- ☐ C-09 — Testi cartelli QR
+- ☐ G-05 — Pagina attestato stampabile
+- ☐ L-05 — Privacy/GDPR notice
+- ☐ PWA manifest (installabile da smartphone)
+
+**Task Utente (parallele):**
+- Q-04 — Test connettività nella Sala Rossa (PRIORITÀ ASSOLUTA)
+- T-01→T-08 — Foto + target AR + file .mind
+- A-01→A-06 — Avatar scelti e convertiti in GLB
+
+**Deliverable:** WebApp completa di UI/UX con copioni reali, pronta per ricevere asset.
+
+---
+
+### SPRINT 2 — INTEGRAZIONE ASSET (da pianificare)
+
+**Obiettivo:** Asset reali integrati, esperienze complete. Dimostrabile.
 
 **Task:**
-- C-04, C-05 — Generazione audio
-- C-06 — File sottotitoli sincronizzati
-- D-07 — Audio + sottotitoli nel Castellano
-- D-09 — Indizio caccia al tesoro con fumetto
-- D-10 — Quiz interattivo bambini
-- T-06, A-08, D-11 — Modalità didattica completa
-- C-03, C-07 — Testi didattici e quiz
-- D-01 — Homepage generale
-- A-07 — Ottimizzazione asset
-- G-01, G-02, G-03 — Sistema punti e badge
-- C-09 — Testi cartelli QR
+- Integrare modelli 3D reali (castellano.glb, drago.glb) in sala-rossa.ts
+- Integrare file .mind reali e testare tracking
+- Integrare audio narrazione reale con sottotitoli sincronizzati
+- C-04, C-05, C-06 — Audio generato + sottotitoli
+- A-07, Q-06 — Ottimizzazione e performance
+- Q-01, Q-02 — Test iPhone + Android
 
-**Deliverable:** Tutte e 3 le esperienze complete con audio, sottotitoli, quiz, badge. Pronte per test.
+**Deliverable:** Esperienza AR completa con asset reali. Funzionante in loco.
+
+---
+
+### SPRINT 3 — TEST, POLISH E LANCIO
+
+**Obiettivo:** Test reali, materiali stampati, formazione, lancio.
+
+**Task:**
+- Q-03, Q-05 — Test in loco + utenti pilota
+- T-09, T-10, L-01, L-02, L-03 — Pannelli fisici + QR + installazione
+- L-04, L-06, L-07, L-08, L-09 — Analytics, comunicazione, formazione
+
+**Deliverable:** 🚀 LANCIO PUBBLICO.
 
 ---
 
