@@ -1,0 +1,155 @@
+# Castello AR — Istruzioni per lo Sviluppatore / Utente
+
+Ultimo aggiornamento: [DATA CREAZIONE]
+
+---
+
+## Setup Iniziale (da fare una volta)
+
+### Software da installare
+- [ ] **Node.js LTS** — Scarica da https://nodejs.org (scegli la versione LTS)
+- [ ] **Claude Code** — Da terminale: `npm install -g @anthropic-ai/claude-code`
+- [ ] **Git** — Scarica da https://git-scm.com (se non già installato)
+- [ ] **Blender** — Scarica da https://blender.org (per conversione modelli 3D)
+
+### Account da creare (tutti gratuiti tranne Claude Pro)
+- [ ] **Claude Pro** ($20/mese) — https://claude.ai (necessario per Claude Code)
+- [ ] **GitHub** — https://github.com (repository codice + hosting con GitHub Pages)
+- [ ] **Adobe/Mixamo** — https://mixamo.com (per avatar 3D animati)
+- [ ] **ElevenLabs** — https://elevenlabs.io (per generazione audio AI, piano free)
+
+### Setup progetto
+```bash
+# 1. Crea repository su GitHub: github.com → New → "castello-ar" → Public
+# 2. Clona il repository
+git clone https://github.com/[TUO-USERNAME]/castello-ar.git
+cd castello-ar
+
+# 3. Attiva GitHub Pages:
+#    github.com/[TUO-USERNAME]/castello-ar → Settings → Pages
+#    Source: Deploy from branch → main → / (root) → Save
+
+# 4. Dopo 1-2 min il sito è live su:
+#    https://[TUO-USERNAME].github.io/castello-ar/
+
+# 5. Avvia server locale per test durante sviluppo
+npx serve .
+# → Apri http://localhost:3000 nel browser
+```
+
+---
+
+## Azioni Manuali Pendenti
+
+<!-- Qui Claude Code scrive le azioni che l'utente deve fare.
+     Formato:
+
+### [DATA] — Descrizione azione
+**Cosa fare:** istruzioni step-by-step
+**Perché:** motivazione
+**Stato:** 🔄 Da fare / ✅ Fatto
+-->
+
+### Nessuna azione pendente al momento.
+Quando Claude Code completa una task che richiede un intervento manuale, lo troverai scritto qui.
+
+---
+
+## Come Fare le Operazioni Comuni
+
+### Testare sul telefono (rete locale)
+```bash
+# Dal terminale, nella cartella del progetto:
+npx serve .
+
+# Ti darà un URL tipo http://192.168.1.X:3000
+# Apri questo URL dal telefono (deve essere sulla stessa rete WiFi)
+```
+
+Se serve un URL pubblico temporaneo (per test fuori dalla rete locale):
+```bash
+npx localtunnel --port 3000
+# Ti darà un URL tipo https://xyz.loca.lt
+```
+
+### Generare file .mind (target per MindAR)
+1. Vai su https://hiukim.github.io/mind-ar-js-doc/tools/compile
+2. Carica l'immagine JPG/PNG che userai come pannello
+3. Clicca "Start" e aspetta la compilazione
+4. **Controlla i feature point** (pallini rossi sull'immagine):
+   - Molti pallini = tracking stabile ✅
+   - Pochi pallini = tracking instabile ❌ → rifai l'immagine con più dettagli
+5. Clicca "Download" per scaricare il file `.mind`
+6. Metti il file nella cartella `sala-nome/assets/targets/`
+
+### Aggiungere un modello 3D da Mixamo
+1. Vai su https://www.mixamo.com e accedi con account Adobe
+2. **Tab "Characters"** → scegli un personaggio
+3. **Tab "Animations"** → cerca e seleziona un'animazione
+4. **Download** con queste impostazioni:
+   - Format: **FBX Binary (.fbx)**
+   - Skin: **With Skin**
+   - Frames per Second: **30**
+   - Keyframe Reduction: **Uniform**
+5. **Converti in GLB con Blender:**
+   - Apri Blender → File → Import → FBX (.fbx)
+   - Seleziona il file scaricato
+   - File → Export → glTF 2.0 (.glb)
+   - Nelle opzioni di export: spunta "Export Animations", Format: "GLB"
+   - Salva nella cartella `sala-nome/assets/models/`
+6. **Verifica dimensione**: deve essere < 5 MB. Se più grande:
+   ```bash
+   gltf-transform etc1s input.glb output.glb
+   ```
+
+### Generare audio con ElevenLabs
+1. Vai su https://elevenlabs.io e crea un account gratuito
+2. Incolla il testo del copione
+3. Scegli una voce italiana
+4. Clicca "Generate"
+5. Scarica il file MP3
+6. Metti nella cartella `sala-nome/assets/audio/`
+7. Rinomina in modo descrittivo: `narrazione-sala-rossa-it.mp3`
+
+### Pubblicare le modifiche online (Deploy)
+```bash
+# Salva le modifiche
+git add .
+git commit -m "feat(sala-rossa): descrizione della modifica"
+git push origin main
+
+# GitHub Pages si aggiorna automaticamente in 1-2 minuti
+# Il sito è su: https://[TUO-USERNAME].github.io/castello-ar/
+
+# Per verificare lo stato del deploy:
+# github.com/[TUO-USERNAME]/castello-ar → Actions → vedi se il build è verde ✅
+```
+
+---
+
+## Troubleshooting
+
+### La fotocamera non si attiva
+- **Verifica HTTPS**: il sito DEVE usare https://, non http://
+- **Permesso negato**: l'utente ha rifiutato il permesso fotocamera
+  - Android: Impostazioni → App → Chrome → Permessi → Fotocamera → Consenti
+  - iOS: Impostazioni → Safari → Fotocamera → Consenti
+- **Browser non supportato**: aggiornare Chrome o Safari all'ultima versione
+
+### Il modello 3D non appare
+- Verifica che il path del file .glb sia corretto nel codice HTML
+- Verifica che il file .mind corrisponda all'immagine stampata
+- Illuminazione: l'image tracking funziona male al buio
+- Distanza: tenere il telefono a 30-50 cm dal pannello
+- Angolazione: inquadrare il pannello frontalmente, non di lato
+
+### L'audio non si sente
+- **iOS**: l'audio NON può partire automaticamente. Serve un pulsante che l'utente tocca.
+- **Volume**: verificare che il volume del telefono non sia su muto
+- **File**: verificare che il file .mp3 esista nel path specificato
+
+### Il caricamento è troppo lento
+- Verificare dimensioni: `ls -lh sala-rossa/assets/models/` — ogni file <5 MB
+- Comprimere i modelli con gltf-transform
+- Comprimere le immagini con TinyPNG (tinypng.com)
+- Verificare la connessione: il WiFi del castello è abbastanza veloce?
