@@ -51,6 +51,22 @@ Vedi sezione in `castello-ar-skill/CASTELLO-AR-REFERENCE.md`.
 
 ---
 
+## Funzionalità Implementate (Sprint 1)
+
+| Route | Descrizione | Commit |
+|---|---|---|
+| `/sala/:id/drago` | G-04: messaggio "Bentornato Esploratore!" al secondo accesso (localStorage) | d9fc293 |
+| `/privacy` | Pagina privacy GDPR — cosa salva il sito (localStorage), no account, no tracking | 472a4a9 |
+| `/attestato` | Attestato di visita stampabile (`@media print`) con rank, badge, data | 472a4a9 |
+| `/qr` | Cartelli QR per le sale — genera QR con `qrcode` npm, stampa un cartello per sala | f555eef |
+
+### Come testare le nuove pagine
+- `/profilo` → link "Stampa attestato" e "Cartelli QR" in fondo
+- `/home` → footer con link a Privacy e Tutorial
+- `/qr` → pulsante "Stampa tutti" per stampare i cartelli fisici
+
+---
+
 ## Asset da Creare / Fornire
 
 ### Immagini Target (pannelli AR nelle sale)
@@ -111,8 +127,8 @@ npm start
 
 ### AR su smartphone (richiede HTTPS)
 L'AR **non funziona su HTTP** — serve HTTPS. Opzioni:
-1. **Deploy su Vercel/Netlify** (HTTPS automatico) — metodo consigliato
-2. `npx localtunnel --port 4200` — URL HTTPS temporaneo per test
+1. **GitHub Pages** (HTTPS automatico dopo setup — vedi sezione Deploy)
+2. `npx localtunnel --port 4200` — URL HTTPS temporaneo per test in locale
 
 ### Checklist test su device
 - [ ] iPhone Safari — la fotocamera si attiva?

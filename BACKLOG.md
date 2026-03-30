@@ -23,6 +23,9 @@ Ultimo aggiornamento: 2026-03-30
 - [x] PWA manifest (manifest.webmanifest, theme-color, installabile)
 - [x] Scan hint automatico dopo 15 sec se target non trovato
 - [x] Aggiornato Piano_Completo_AR_Castello_v2.md con nuovo stack
+- [x] G-04: Messaggio bentornato al secondo accesso esperienza Drago (2026-03-30)
+- [x] L-05: Pagina Privacy GDPR + footer home con link privacy/tutorial (2026-03-30)
+- [x] C-09: Cartelli QR stampabili per le sale con istruzioni (2026-03-30)
 
 ### Da Fare 📋 (utente)
 - [ ] Configurare GitHub Pages: Settings → Pages → Source: **"GitHub Actions"** → poi `git push`
@@ -52,12 +55,13 @@ Ultimo aggiornamento: 2026-03-30
 
 ### Da Fare 📋
 - [ ] Animazioni di transizione tra pagine (Angular animations)
-- [ ] Loading screen con animazione Lottie/CSS
-- [ ] Gestione orientamento schermo
+- [ ] Gestione orientamento schermo (warning portrait→landscape su AR)
 - [ ] Seconda sala (Sala Blu) — creare solo il file dati + asset
-- [ ] Sistema indizi cross-sala per caccia al tesoro
-- [ ] Generazione QR code per ogni sala
-- [ ] PWA manifest + Service Worker per cache offline
+- [ ] L-06: Plausible Analytics — script + custom events (targetFound, quizAnswered, badgeEarned)
+- [ ] Service Worker per cache offline degli asset
+
+### Completate ✅
+- [x] Generazione QR code per ogni sala (C-09 — /qr)
 
 ---
 
