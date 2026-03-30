@@ -80,6 +80,17 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
       </div>
     }
 
+    <!-- Orientation warning: richiedi portrait per AR -->
+    @if (isLandscape() && !showReturnGreeting() && !showArTutorial()) {
+      <div class="fixed inset-0 bg-bg/95 flex flex-col items-center justify-center z-[1004] px-6 text-center">
+        <div class="text-6xl mb-4 animate-[spin_2s_linear_infinite]">📱</div>
+        <h2 class="font-[family-name:var(--font-family-title)] text-gold text-xl mb-2">Ruota il telefono</h2>
+        <p class="text-text-muted text-sm max-w-xs">
+          L'esperienza AR funziona meglio in modalità verticale.<br>Ruota il telefono per continuare.
+        </p>
+      </div>
+    }
+
     <!-- Loading screen -->
     @if (loading()) {
       <div class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1000] px-6 text-center">
@@ -270,6 +281,7 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
   readonly infoPanelMode = signal<'info' | 'timeline'>('info');
   readonly showHelp = signal(false);
   readonly showReturnGreeting = signal(false);
+  readonly isLandscape = signal(false);
 
   readonly helpTips = [
     { icon: '💡', text: 'Assicurati di essere in un luogo ben illuminato.' },
@@ -284,6 +296,7 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
   private progressInterval: ReturnType<typeof setInterval> | null = null;
   private scanHintTimeout: ReturnType<typeof setTimeout> | null = null;
   private labPanelOpened = false;
+  private orientationHandler: (() => void) | null = null;
 
   private static readonly TUTORIAL_KEY = 'arTutorialSeen';
   private static readonly DRAGO_VISITED_KEY = 'dragoVisited';
@@ -296,6 +309,13 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
 
     this.experience = getExperience(this.roomId, expType);
     if (!this.experience) { this.router.navigate(['/']); return; }
+
+    // Orientation warning
+    this.orientationHandler = () => {
+      this.isLandscape.set(window.innerWidth > window.innerHeight);
+    };
+    this.orientationHandler();
+    window.addEventListener('resize', this.orientationHandler);
 
     // G-04: saluta visitatori di ritorno del Drago
     if (this.experience.type === 'drago') {
@@ -365,6 +385,7 @@ export class ArExperienceComponent implements OnInit, OnDestroy {
     if (this.progressInterval) clearInterval(this.progressInterval);
     if (this.subtitleInterval) clearInterval(this.subtitleInterval);
     if (this.scanHintTimeout) clearTimeout(this.scanHintTimeout);
+    if (this.orientationHandler) window.removeEventListener('resize', this.orientationHandler);
     // Rimuovi scena AR dal DOM
     const container = document.getElementById('ar-container');
     if (container) container.innerHTML = '';
