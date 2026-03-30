@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, OnDestroy, signal, effect, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar';
 import { SubtitleOverlayComponent } from '../../components/subtitle-overlay/subtitle-overlay';
@@ -15,7 +15,7 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
 @Component({
   selector: 'app-ar-experience',
   standalone: true,
-  imports: [ProgressBarComponent, SubtitleOverlayComponent, QuizComponent, InfoPanelComponent],
+  imports: [ProgressBarComponent, SubtitleOverlayComponent, QuizComponent, InfoPanelComponent, DecimalPipe],
   template: `
     <!-- G-04: Toast "Bentornato" per visitatori di ritorno (Drago) -->
     @if (showReturnGreeting()) {
@@ -95,18 +95,29 @@ import type { ExperienceConfig, ExperienceType, SubtitleEntry } from '../../type
     <!-- Loading screen -->
     @if (loading()) {
       <div class="fixed inset-0 bg-bg flex flex-col items-center justify-center z-[1000] px-6 text-center">
-        <h2 class="font-[family-name:var(--font-family-title)] text-gold text-xl mb-5">
-          {{ experience?.icon }} {{ experience?.title }}
-        </h2>
-        <p class="text-sm text-text-muted max-w-xs">
-          Preparazione in corso...<br>
-          Tra poco potrai inquadrare il pannello AR.
-        </p>
-        <div class="mt-5 w-full max-w-xs">
-          <app-progress-bar [value]="loadingProgress()" />
+        <!-- Icona animata -->
+        <div class="text-6xl mb-2" style="animation: castlePulse 1.8s ease-in-out infinite">
+          {{ experience?.icon ?? '🏰' }}
         </div>
-        <p class="text-xs text-text-muted mt-3">
-          Assicurati di aver concesso il permesso alla fotocamera.
+        <h2 class="font-[family-name:var(--font-family-title)] text-gold text-xl mb-1">
+          {{ experience?.title }}
+        </h2>
+        <p class="text-xs text-text-muted mb-6">Preparazione realtà aumentata…</p>
+
+        <!-- Barra progresso con glow -->
+        <div class="w-full max-w-xs">
+          <div class="h-1.5 bg-stone rounded-full overflow-hidden">
+            <div
+              class="h-full bg-gold rounded-full transition-all duration-300"
+              [style.width.%]="loadingProgress()"
+              style="box-shadow: 0 0 8px var(--color-gold)"
+            ></div>
+          </div>
+          <p class="text-xs text-text-muted mt-2">{{ loadingProgress() | number:'1.0-0' }}%</p>
+        </div>
+
+        <p class="text-xs text-text-muted mt-6 max-w-xs">
+          Concedi il permesso alla fotocamera quando richiesto.
         </p>
       </div>
     }
